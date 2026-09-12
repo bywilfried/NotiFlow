@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_notiflow">À propos de NotiFlow</string>
+    <string name="notiflow_description">NotiFlow vous permet de contrôler précisément quand et comment les notifications peuvent vous atteindre. Créez des règles selon l’application, le titre ou le contenu, utilisez des expressions régulières ou avancées, planifiez plusieurs plages horaires pour chaque jour et choisissez des actions comme rejeter, retarder, mettre en sourdine, regrouper ou remplacer les notifications.</string>
+    <string name="notiflow_origin">NotiFlow est un fork indépendant de NotiFilter par BURG3R5, enrichi avec une planification des notifications plus flexible, la gestion de plusieurs langues et de nouvelles possibilités de contrôle des notifications.</string>
+    <string name="notiflow_links"><![CDATA[Sous licence <a href="https://github.com/bywilfried/byNotiFilter/blob/notiflow-dev/license">GNU GPLv3</a><br/>Code source de NotiFlow : <a href="https://github.com/bywilfried/byNotiFilter">GitHub</a><br/>Projet d’origine : <a href="https://github.com/BURG3R5/NotiFilter">NotiFilter par BURG3R5</a><br/>Le <a href="https://github.com/BURG3R5/NotiFilter/wiki">wiki de NotiFilter</a> reste une référence utile pour les fonctions héritées.]]></string>
+    <string name="notiflow_maintainer"><![CDATA[NotiFlow maintenu par <a href="https://github.com/bywilfried">bywilfried</a><br/>Basé sur <a href="https://github.com/BURG3R5/NotiFilter">NotiFilter</a> par BURG3R5]]></string>
+</resources>
