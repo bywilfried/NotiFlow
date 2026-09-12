@@ -9,6 +9,7 @@ object Constants {
 
     const val SETTINGS = "settings"
     const val RUN_IN_FOREGROUND = "run_in_foreground"
+    const val APP_LANGUAGE = "app_language"
 
     const val ALERT_NOTIFICATION_ID = 1000
     const val ALERT_NOTIFICATION_CHANNEL_ID = "notifilter_alert"
