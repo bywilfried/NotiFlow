@@ -78,23 +78,25 @@
     <string name="package_name">Nom du paquet</string>
     <string name="package_name_placeholder">Rechercher parmi les applications installées</string>
     <string name="pattern_page_title">Configurez la méthode de correspondance</string>
-    <string name="search_text">Rechercher dans la notification :</string>
+    <string name="search_text">Rechercher dans la notification</string>
     <string name="title">titre</string>
     <string name="content">contenu</string>
     <string name="title_or_content">titre ou contenu</string>
     <string name="title_and_content">titre et contenu</string>
-    <string name="use_expression">Évaluer une expression</string>
+    <string name="use_expression">Expression avancée</string>
+    <string name="expression_users_hint">Pour utilisateurs avancés</string>
     <string name="notification_pattern">Motif de notification</string>
+    <string name="regex_pattern">Expression régulière (Regex)</string>
     <string name="title_pattern">Motif du titre</string>
     <string name="content_pattern">Motif du contenu</string>
-    <string name="expression">Expression</string>
+    <string name="expression">Expression avancée</string>
     <string name="pattern_placeholder">Saisissez une expression régulière</string>
-    <string name="expression_placeholder">Saisissez une expression valide</string>
+    <string name="expression_placeholder">Saisissez une expression avancée</string>
     <string name="pattern_supporting">"Saisissez un motif correspondant à « %1$s ». "</string>
     <string name="or">ou</string>
     <string name="generate">Générer ?</string>
     <string name="pattern_advice"><![CDATA[Exemples d’expressions régulières :<br/><code>bonjour vous</code> → contient le texte exact « bonjour vous » (majuscules/minuscules respectées)<br/><code>(?i)bonjour vous</code> → contient « bonjour vous », que ce soit écrit <code>bonjour vous</code>, <code>Bonjour vous</code>, <code>BONJOUR VOUS</code>, etc.<br/><code>^bonjour</code> → commence par « bonjour » (majuscules/minuscules respectées)<br/><code>bonjour$</code> → se termine par « bonjour » (majuscules/minuscules respectées)<br/><code>bonjour|salut</code> → contient « bonjour » ou « salut » (majuscules/minuscules respectées)]]></string>
-    <string name="expression_advice"><![CDATA[Cliquez <a href="https://github.com/BURG3R5/NotiFilter/wiki/Expressions">ici↗</a> pour en savoir plus sur les expressions.]]></string>
+    <string name="expression_advice"><![CDATA[Construisez une condition logique avec <code>titleMatches(...)</code> et <code>contentMatches(...)</code>.<br/><br/>Exemples :<br/><code>and(titleMatches("bonjour"), contentMatches("message"))</code> → le titre contient « bonjour » ET le contenu contient « message »<br/><code>or(titleMatches("urgent"), contentMatches("urgent"))</code> → « urgent » est présent dans le titre OU le contenu<br/><br/>Cliquez <a href="https://github.com/BURG3R5/NotiFilter/wiki/Expressions">ici↗</a> pour en savoir plus sur les expressions.]]></string>
     <string name="invalid_regex">L’expression régulière contient des erreurs</string>
     <string name="invalid_expression">L’expression contient des erreurs</string>
     <string name="pattern_doesnt_match_title">Le motif ne correspond pas au titre de la notification sélectionnée</string>
