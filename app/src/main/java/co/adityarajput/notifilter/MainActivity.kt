@@ -18,6 +18,7 @@
 
 package co.adityarajput.notifilter
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import co.adityarajput.notifilter.data.Cache
+import co.adityarajput.notifilter.utils.withAppLanguage
 import co.adityarajput.notifilter.views.Navigator
 import co.adityarajput.notifilter.views.Theme
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase.withAppLanguage())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
