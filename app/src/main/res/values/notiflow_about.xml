@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_notiflow">About NotiFlow</string>
+    <string name="notiflow_description">NotiFlow gives you fine-grained control over when and how notifications reach you. Create rules that match apps, titles or content, use regular expressions or advanced expressions, schedule multiple time ranges for each day, and choose actions such as dismissing, delaying, muting, batching or replacing notifications.</string>
+    <string name="notiflow_origin">NotiFlow is an independent fork of NotiFilter by BURG3R5, expanded with more flexible notification scheduling, localization and notification-control features.</string>
+    <string name="notiflow_links"><![CDATA[Licensed under <a href="https://github.com/bywilfried/byNotiFilter/blob/notiflow-dev/license">GNU GPLv3</a><br/>NotiFlow source code: <a href="https://github.com/bywilfried/byNotiFilter">GitHub</a><br/>Original project: <a href="https://github.com/BURG3R5/NotiFilter">NotiFilter by BURG3R5</a><br/>The original <a href="https://github.com/BURG3R5/NotiFilter/wiki">NotiFilter wiki</a> remains a useful reference for inherited features.]]></string>
+    <string name="notiflow_maintainer"><![CDATA[NotiFlow maintained by <a href="https://github.com/bywilfried">bywilfried</a><br/>Based on <a href="https://github.com/BURG3R5/NotiFilter">NotiFilter</a> by BURG3R5]]></string>
+</resources>
