@@ -80,7 +80,7 @@ fun UpsertFilterScreen(
             ) {
                 Column(
                     Modifier.fillMaxWidth().run {
-                        if (it == FormPage.ACTION || it == FormPage.SCHEDULE) {
+                        if (it == FormPage.PATTERN || it == FormPage.ACTION || it == FormPage.SCHEDULE) {
                             this.verticalScroll(rememberScrollState())
                         } else {
                             this
@@ -343,14 +343,29 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
 
 @Composable
 private fun PatternPage(viewModel: UpsertFilterViewModel) {
+    val useExpression = viewModel.state.values.regexTarget == RegexTarget.EXPRESSION
+
     Text(
         stringResource(R.string.pattern_page_title),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Normal,
     )
-    Row(verticalAlignment = Alignment.CenterVertically) {
+
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .selectable(!useExpression) {
+                if (useExpression) {
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(regexTarget = RegexTarget.OR),
+                    )
+                }
+            },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         RadioButton(
-            viewModel.state.values.regexTarget != RegexTarget.EXPRESSION,
+            !useExpression,
             null,
             Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
         )
@@ -360,124 +375,175 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
             fontWeight = FontWeight.Normal,
         )
     }
-    FlowRow(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
-        RegexTarget.entries.forEach {
-            if (it.description != null)
-                Row(
-                    Modifier
-                        .fillMaxWidth(0.5f)
-                        .selectable((it == viewModel.state.values.regexTarget)) {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(regexTarget = it),
+
+    AnimatedVisibility(!useExpression) {
+        Column(
+            Modifier.fillMaxWidth(),
+            Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+        ) {
+            FlowRow(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
+                RegexTarget.entries.forEach {
+                    if (it.description != null)
+                        Row(
+                            Modifier
+                                .fillMaxWidth(0.5f)
+                                .selectable((it == viewModel.state.values.regexTarget)) {
+                                    viewModel.updateForm(
+                                        viewModel.state.page,
+                                        viewModel.state.values.copy(regexTarget = it),
+                                    )
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                (it == viewModel.state.values.regexTarget),
+                                null,
+                                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
                             )
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RadioButton(
-                        (it == viewModel.state.values.regexTarget),
-                        null,
-                        Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
-                    )
-                    Text(
-                        stringResource(it.description),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Normal,
-                    )
+                            Text(
+                                stringResource(it.description),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Normal,
+                            )
+                        }
                 }
+            }
+
+            OutlinedTextField(
+                viewModel.state.values.queryPattern,
+                {
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(queryPattern = it),
+                    )
+                },
+                Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        stringResource(
+                            if (viewModel.state.values.regexTarget == RegexTarget.AND) R.string.title_pattern
+                            else R.string.regex_pattern,
+                        ),
+                    )
+                },
+                placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
+                supportingText = { SupportingText(viewModel, true) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ),
+            )
+
+            AnimatedVisibility(viewModel.state.values.regexTarget == RegexTarget.AND) {
+                OutlinedTextField(
+                    viewModel.state.values.secondaryQueryPattern,
+                    {
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(secondaryQueryPattern = it),
+                        )
+                    },
+                    Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.content_pattern)) },
+                    placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
+                    supportingText = { SupportingText(viewModel, false) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                )
+            }
+
+            Text(
+                AnnotatedString.fromHtml(
+                    stringResource(R.string.pattern_advice),
+                    TextLinkStyles(
+                        SpanStyle(
+                            MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                    ),
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Normal,
+            )
         }
     }
+
+    HorizontalDivider()
+
     Row(
-        Modifier.selectable(viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) {
-            viewModel.updateForm(
-                viewModel.state.page,
-                viewModel.state.values.copy(regexTarget = RegexTarget.EXPRESSION),
-            )
-        },
+        Modifier
+            .fillMaxWidth()
+            .selectable(useExpression) {
+                viewModel.updateForm(
+                    viewModel.state.page,
+                    viewModel.state.values.copy(regexTarget = RegexTarget.EXPRESSION),
+                )
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(
-            viewModel.state.values.regexTarget == RegexTarget.EXPRESSION,
+            useExpression,
             null,
             Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
         )
-        Text(
-            stringResource(R.string.use_expression),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Normal,
-        )
+        Column {
+            Text(
+                stringResource(R.string.use_expression),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Normal,
+            )
+            Text(
+                stringResource(R.string.expression_users_hint),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Normal,
+            )
+        }
     }
-    OutlinedTextField(
-        viewModel.state.values.queryPattern,
-        {
-            viewModel.updateForm(
-                viewModel.state.page,
-                viewModel.state.values.copy(queryPattern = it),
-            )
-        },
-        Modifier.fillMaxWidth(),
-        label = {
-            Text(
-                stringResource(
-                    when (viewModel.state.values.regexTarget) {
-                        RegexTarget.EXPRESSION -> R.string.expression
-                        RegexTarget.AND -> R.string.title_pattern
-                        else -> R.string.notification_pattern
-                    },
-                ),
-            )
-        },
-        placeholder = {
-            Text(
-                stringResource(
-                    if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) R.string.expression_placeholder
-                    else R.string.pattern_placeholder,
-                ),
-            )
-        },
-        supportingText = { SupportingText(viewModel, true) },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
-    )
-    AnimatedVisibility(viewModel.state.values.regexTarget == RegexTarget.AND) {
-        OutlinedTextField(
-            viewModel.state.values.secondaryQueryPattern,
-            {
-                viewModel.updateForm(
-                    viewModel.state.page,
-                    viewModel.state.values.copy(secondaryQueryPattern = it),
-                )
-            },
+
+    AnimatedVisibility(useExpression) {
+        Column(
             Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.content_pattern)) },
-            placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
-            supportingText = { SupportingText(viewModel, false) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-        )
-    }
-    Text(
-        AnnotatedString.fromHtml(
-            stringResource(
-                if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) R.string.expression_advice
-                else R.string.pattern_advice,
-            ),
-            TextLinkStyles(
-                SpanStyle(
-                    MaterialTheme.colorScheme.primary,
-                    textDecoration = TextDecoration.Underline,
+            Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+        ) {
+            OutlinedTextField(
+                viewModel.state.values.queryPattern,
+                {
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(queryPattern = it),
+                    )
+                },
+                Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.expression)) },
+                placeholder = { Text(stringResource(R.string.expression_placeholder)) },
+                supportingText = { SupportingText(viewModel, true) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
-            ),
-        ),
-        style = MaterialTheme.typography.labelLarge,
-        fontWeight = FontWeight.Normal,
-    )
+            )
+
+            Text(
+                AnnotatedString.fromHtml(
+                    stringResource(R.string.expression_advice),
+                    TextLinkStyles(
+                        SpanStyle(
+                            MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                    ),
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Normal,
+            )
+        }
+    }
+
     if (viewModel.state.error == FormError.INVALID_NOTIFICATION_REGEX) ErrorText(R.string.invalid_regex)
     if (viewModel.state.error == FormError.INVALID_EXPRESSION) ErrorText(R.string.invalid_expression)
     viewModel.state.warnings.forEach { WarningText(it.description) }
