@@ -319,7 +319,7 @@ fun SettingsScreen(
                                 stringResource(R.string.alttext_info),
                             )
                             Text(
-                                stringResource(R.string.about_app),
+                                stringResource(R.string.about_notiflow),
                                 fontWeight = FontWeight.Medium,
                             )
                         }
