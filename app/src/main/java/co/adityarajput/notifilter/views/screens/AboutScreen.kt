@@ -1,9 +1,8 @@
 package co.adityarajput.notifilter.views.screens
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,8 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.*
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +24,7 @@ import co.adityarajput.notifilter.views.components.AppBar
 
 @Composable
 fun AboutScreen(goBack: () -> Unit) {
-    Scaffold(topBar = { AppBar(stringResource(R.string.about), true, goBack) }) { paddingValues ->
+    Scaffold(topBar = { AppBar(stringResource(R.string.about_notiflow), true, goBack) }) { paddingValues ->
         Box(
             Modifier
                 .fillMaxSize()
@@ -38,43 +38,40 @@ fun AboutScreen(goBack: () -> Unit) {
                 Alignment.CenterHorizontally,
             ) {
                 AboutCard {
-                    Box(
+                    Image(
+                        painterResource(R.drawable.notiflow_icon_main),
+                        stringResource(R.string.alttext_app_logo),
                         Modifier
+                            .size(112.dp)
                             .padding(top = dimensionResource(R.dimen.padding_large))
                             .align(Alignment.CenterHorizontally),
-                        Alignment.Center,
-                    ) {
-                        Box(
-                            Modifier
-                                .size(80.dp)
-                                .background(MaterialTheme.colorScheme.primary, shape = CircleShape),
-                            Alignment.Center,
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.notifications_off),
-                                stringResource(R.string.alttext_app_logo),
-                                Modifier.size(50.dp),
-                            )
-                        }
-                    }
+                    )
                     Text(
-                        buildAnnotatedString {
-                            withStyle(
-                                SpanStyle(
-                                    MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            ) { append(stringResource(R.string.app_name)) }
-                            append(stringResource(R.string.app_description))
-                        },
+                        stringResource(R.string.app_name),
+                        Modifier
+                            .padding(top = dimensionResource(R.dimen.padding_medium))
+                            .align(Alignment.CenterHorizontally),
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                    Text(
+                        stringResource(R.string.notiflow_description),
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        stringResource(R.string.notiflow_origin),
+                        Modifier.padding(
+                            start = dimensionResource(R.dimen.padding_large),
+                            end = dimensionResource(R.dimen.padding_large),
+                            bottom = dimensionResource(R.dimen.padding_large),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
                 AboutCard {
                     Text(
                         AnnotatedString.fromHtml(
-                            stringResource(R.string.app_links),
+                            stringResource(R.string.notiflow_links),
                             TextLinkStyles(
                                 SpanStyle(
                                     MaterialTheme.colorScheme.primary,
@@ -94,8 +91,7 @@ fun AboutScreen(goBack: () -> Unit) {
                     )
                 }
                 Column(
-                    Modifier
-                        .fillMaxWidth(),
+                    Modifier.fillMaxWidth(),
                     Arrangement.Bottom,
                     Alignment.CenterHorizontally,
                 ) {
@@ -109,7 +105,7 @@ fun AboutScreen(goBack: () -> Unit) {
                     )
                     Text(
                         AnnotatedString.fromHtml(
-                            stringResource(R.string.dev_credit),
+                            stringResource(R.string.notiflow_maintainer),
                             TextLinkStyles(
                                 SpanStyle(
                                     MaterialTheme.colorScheme.primary,
