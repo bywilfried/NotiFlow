@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_language">Language</string>
+    <string name="language_description">Choose the language used by NotiFlow.</string>
+    <string name="language_system">System</string>
+    <string name="language_english">English</string>
+    <string name="language_french">French</string>
+</resources>
