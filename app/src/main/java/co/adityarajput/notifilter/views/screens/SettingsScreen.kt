@@ -156,6 +156,9 @@ fun SettingsScreen(
                         )
                     }
                 }
+
+                LanguageSettingsCard()
+
                 Card(
                     Modifier
                         .fillMaxWidth()
