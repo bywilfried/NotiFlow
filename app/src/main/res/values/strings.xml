@@ -100,7 +100,7 @@
     <string name="pattern_supporting">"Enter a pattern that matches \'%1$s\'. "</string>
     <string name="or">or</string>
     <string name="generate">Generate?</string>
-    <string name="pattern_advice"><![CDATA[Tip: Include keywords but exclude non-essentials. Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">here↗</a> for examples.]]></string>
+    <string name="pattern_advice"><![CDATA[Regex examples:<br/><code>hello you</code> → contains the exact text “hello you” (uppercase/lowercase respected)<br/><code>(?i)hello you</code> → contains “hello you”, whether written <code>hello you</code>, <code>Hello you</code>, <code>HELLO YOU</code>, etc.<br/><code>^hello</code> → starts with “hello” (uppercase/lowercase respected)<br/><code>hello$</code> → ends with “hello” (uppercase/lowercase respected)<br/><code>hello|hi</code> → contains “hello” or “hi” (uppercase/lowercase respected)]]></string>
     <string name="expression_advice"><![CDATA[Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Expressions\">here↗</a> to learn about expressions.]]></string>
     <string name="invalid_regex">Regex pattern contains errors</string>
     <string name="invalid_expression">Expression contains errors</string>
