@@ -20,9 +20,15 @@ fun Context.appLanguage(): String =
 
 fun Context.withAppLanguage(): Context {
     val languageTag = appLanguage()
-    if (languageTag.isBlank()) return this
+
+    if (languageTag.isBlank()) {
+        resources.configuration.locales[0]?.let(Locale::setDefault)
+        return this
+    }
 
     val locale = Locale.forLanguageTag(languageTag)
+    Locale.setDefault(locale)
+
     val configuration = Configuration(resources.configuration).apply {
         setLocale(locale)
         setLayoutDirection(locale)
