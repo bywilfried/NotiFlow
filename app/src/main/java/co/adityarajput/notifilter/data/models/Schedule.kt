@@ -10,7 +10,7 @@ import java.util.Calendar
 @Serializable
 data class Schedule(
     val ranges: Map<Int, List<TimeRange>> =
-        (1..7).associateWith { listOf(TimeRange(0, 1440)) },
+        (1..7).associateWith { emptyList() },
 ) {
     val description
         @Composable get() = buildString {
