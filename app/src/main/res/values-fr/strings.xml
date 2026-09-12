@@ -93,7 +93,7 @@
     <string name="pattern_supporting">"Saisissez un motif correspondant à « %1$s ». "</string>
     <string name="or">ou</string>
     <string name="generate">Générer ?</string>
-    <string name="pattern_advice"><![CDATA[Conseil : incluez les mots-clés et excluez les éléments non essentiels. Cliquez <a href="https://github.com/BURG3R5/NotiFilter/wiki/Examples">ici↗</a> pour voir des exemples.]]></string>
+    <string name="pattern_advice"><![CDATA[Exemples d’expressions régulières :<br/><code>bonjour vous</code> → contient le texte exact « bonjour vous » (majuscules/minuscules respectées)<br/><code>(?i)bonjour vous</code> → contient « bonjour vous », que ce soit écrit <code>bonjour vous</code>, <code>Bonjour vous</code>, <code>BONJOUR VOUS</code>, etc.<br/><code>^bonjour</code> → commence par « bonjour » (majuscules/minuscules respectées)<br/><code>bonjour$</code> → se termine par « bonjour » (majuscules/minuscules respectées)<br/><code>bonjour|salut</code> → contient « bonjour » ou « salut » (majuscules/minuscules respectées)]]></string>
     <string name="expression_advice"><![CDATA[Cliquez <a href="https://github.com/BURG3R5/NotiFilter/wiki/Expressions">ici↗</a> pour en savoir plus sur les expressions.]]></string>
     <string name="invalid_regex">L’expression régulière contient des erreurs</string>
     <string name="invalid_expression">L’expression contient des erreurs</string>
