@@ -85,23 +85,25 @@
     <string name="package_name">Package name</string>
     <string name="package_name_placeholder">Search installed apps</string>
     <string name="pattern_page_title">Configure the matching method</string>
-    <string name="search_text">Search in the notification\'s</string>
+    <string name="search_text">Search in the notification</string>
     <string name="title">title</string>
     <string name="content">content</string>
     <string name="title_or_content">title or content</string>
     <string name="title_and_content">title and content</string>
-    <string name="use_expression">Evaluate an expression</string>
+    <string name="use_expression">Advanced expression</string>
+    <string name="expression_users_hint">For advanced users</string>
     <string name="notification_pattern">Notification pattern</string>
+    <string name="regex_pattern">Regular expression (Regex)</string>
     <string name="title_pattern">Title pattern</string>
     <string name="content_pattern">Content pattern</string>
-    <string name="expression">Expression</string>
+    <string name="expression">Advanced expression</string>
     <string name="pattern_placeholder">Enter a regex pattern</string>
-    <string name="expression_placeholder">Enter a valid expression</string>
+    <string name="expression_placeholder">Enter an advanced expression</string>
     <string name="pattern_supporting">"Enter a pattern that matches \'%1$s\'. "</string>
     <string name="or">or</string>
     <string name="generate">Generate?</string>
     <string name="pattern_advice"><![CDATA[Regex examples:<br/><code>hello you</code> → contains the exact text “hello you” (uppercase/lowercase respected)<br/><code>(?i)hello you</code> → contains “hello you”, whether written <code>hello you</code>, <code>Hello you</code>, <code>HELLO YOU</code>, etc.<br/><code>^hello</code> → starts with “hello” (uppercase/lowercase respected)<br/><code>hello$</code> → ends with “hello” (uppercase/lowercase respected)<br/><code>hello|hi</code> → contains “hello” or “hi” (uppercase/lowercase respected)]]></string>
-    <string name="expression_advice"><![CDATA[Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Expressions\">here↗</a> to learn about expressions.]]></string>
+    <string name="expression_advice"><![CDATA[Build a logical condition using <code>titleMatches(...)</code> and <code>contentMatches(...)</code>.<br/><br/>Examples:<br/><code>and(titleMatches("hello"), contentMatches("message"))</code> → title contains “hello” AND content contains “message”<br/><code>or(titleMatches("urgent"), contentMatches("urgent"))</code> → “urgent” is in the title OR the content<br/><br/>Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Expressions\">here↗</a> to learn more about expressions.]]></string>
     <string name="invalid_regex">Regex pattern contains errors</string>
     <string name="invalid_expression">Expression contains errors</string>
     <string name="pattern_doesnt_match_title">"Regex pattern doesn't match selected notification's title"</string>
