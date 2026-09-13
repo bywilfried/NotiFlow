@@ -1,54 +1,145 @@
-<img width="192" height="192" alt="NotiFilter app icon" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/icon.png" />
+<p align="center">
+  <img src="app/src/main/res/drawable-nodpi/notiflow_icon_main.png" alt="NotiFlow app icon" width="160" />
+</p>
 
-![F-Droid downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fco.adityarajput.notifilter.json&query=%24.total_downloads&logo=fdroid&style=flat-square&label=F-Droid%20downloads) ![GitHub downloads](https://img.shields.io/github/downloads/BURG3R5/NotiFilter/total?style=flat-square&logo=github&label=GitHub%20downloads)
+<h1 align="center">NotiFlow</h1>
 
-# NotiFilter
+<p align="center">
+  <strong>Fine-grained control over when and how Android notifications reach you.</strong>
+</p>
 
-**Silence annoying notifications**
+NotiFlow is a free and open-source Android application that lets you create rules to control notifications on your device.
 
-NotiFilter listens to all device notifications and quietly manages those that match your filters.
+Instead of simply enabling or disabling notifications for an entire app, NotiFlow can identify notifications by application, title, content, regular expression, or advanced expression, then decide what should happen to them and when.
 
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/co.adityarajput.notifilter) [<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/BURG3R5/NotiFilter)
-
-## Screenshots
-
-<img alt="NotiFilter screenshot: filters screen" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/1.png" width=30%> <img alt="NotiFilter screenshot: block history" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/2.png" width=30%>
+> **Project status:** NotiFlow is under active development. The `notiflow-dev` branch contains the current NotiFlow development version.
 
 ## Features
 
-- **Filters** - Use [regex](https://github.com/BURG3R5/NotiFilter/wiki/Examples) to precisely target
-  annoying notifications from
-  each app 🎯
-- **Actions** - Choose what to do with the filtered notifications ⚙
-    1. Dismiss it 🚫
-    2. Tap it ✅
-    3. Tap a button 🔽️
-    4. Delay it ⏳
-    5. Collect into batches 📦
-    6. Debounce it ❄
-    7. Mute it 🔇
-    8. Play an alert 🔔
-    9. Disable DND mode 🔊
-    10. Remove after a delay ⏲️
-    11. Replace with a custom notification 📝
-- **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
-- **History** - Recently dismissed notifications are stored locally, for reference and retrieval 🧾
-- **Widget** - Configure filters to send notifications to a home screen widget 📱
-- **Export/Import** - Backup or transfer your filters as JSON files 📂
-- **Free, open-source & private**
-    - No ads, subscriptions, or in-app purchases 🆓
-    - Licensed under the [GPLv3](https://github.com/BURG3R5/notifilter/blob/dev/LICENSE) 📃
-    - Fully offline; your data never leaves your device 🔐
-- **Lightweight** - Runs in the background with minimal battery and memory usage ⏩
+### 🎯 Flexible notification matching
 
-## Usage
+Create rules for specific applications and choose how notifications should be matched:
 
-Refer to the [wiki](https://github.com/BURG3R5/NotiFilter/wiki) for instructions, examples, tips,
-and FAQs.
+- All notifications from an application
+- Notification title
+- Notification content
+- Title **or** content
+- Title **and** content
+- Regular expressions (regex)
+- Advanced logical expressions for more complex matching
 
-## Verification
+This makes it possible to create anything from a simple “apply this rule to every notification from this app” rule to much more precise filters.
 
-Package ID: `co.adityarajput.notifilter`
+### ⚙️ Notification actions
 
-SHA256 hash of signing certificate:
-`56:0A:30:9B:4F:01:AC:3D:28:65:EA:C6:E3:C3:35:59:EC:C7:E9:AD:8E:A7:9E:CD:58:D2:56:B4:B6:45:8A:0E`
+When a notification matches a rule, NotiFlow can:
+
+1. Dismiss it 🚫
+2. Tap/open it ✅
+3. Tap one of its action buttons 🔽️
+4. Delay (snooze) it ⏳
+5. Collect notifications into batches 📦
+6. Debounce repeated notifications ❄️
+7. Silence it 🔇
+8. Play an alert 🔔
+9. Disable Do Not Disturb 🔊
+10. Remove it after a delay ⏲️
+11. Replace it with a custom notification 📝
+
+### ⏰ Advanced scheduling
+
+Rules can be restricted to specific times of the week.
+
+NotiFlow supports **multiple independent time ranges for each day**, allowing schedules such as:
+
+```text
+Monday–Friday
+00:00 → 09:00
+19:00 → 24:00
+
+Saturday–Sunday
+00:00 → 24:00
+```
+
+There is no fixed limit to the number of time ranges you can add to a day.
+
+For delayed notifications, Android keeps the notification snoozed until the end of the currently active time range. When it returns, NotiFlow evaluates the notification again, so consecutive or all-day ranges continue to behave consistently.
+
+### 🧾 History and controls
+
+NotiFlow keeps useful notification information locally and includes tools inherited from NotiFilter for managing filters and notification history.
+
+Home-screen widgets can also provide quick access to filter controls and notification information.
+
+### 📂 Import and export
+
+Rules can be exported to JSON and imported again, making it easier to back up or transfer a NotiFlow configuration.
+
+### 🌍 Languages
+
+NotiFlow currently includes:
+
+- English 🇬🇧
+- French 🇫🇷
+- System language selection
+
+The language can be changed directly from the application settings.
+
+## 🔐 Privacy
+
+NotiFlow is designed to work locally on your Android device.
+
+- No ads
+- No subscriptions
+- No in-app purchases
+- No account required
+- Notification processing is performed on-device
+- Open-source code
+
+Because notification rules require access to notification content, Android will ask you to grant NotiFlow **Notification Access**. This permission is essential for the application to inspect and manage notifications according to your rules.
+
+See [privacy.md](privacy.md) for the project's privacy information.
+
+## 📦 Application variants
+
+NotiFlow uses separate Android application IDs for development and release builds, allowing them to coexist on the same device:
+
+| Variant | Application ID | Name |
+| --- | --- | --- |
+| Release | `com.bywilfried.notiflow` | NotiFlow |
+| Nightly / development | `com.bywilfried.notiflow.dev` | NotiFlow-dev |
+| Debug | `com.bywilfried.notiflow.debug` | NotiFlow |
+
+Development and release builds are signed independently from the original NotiFilter application and therefore do not replace an existing NotiFilter installation.
+
+## 🛠️ Building
+
+The project is an Android/Gradle project. GitHub Actions can build the development and release APK variants from the repository workflow.
+
+The development version lives on the `notiflow-dev` branch.
+
+Prebuilt APK availability may change while the project is still under development. Always verify that you are downloading builds from this repository:
+
+**https://github.com/bywilfried/NotiFlow**
+
+## 🌱 About the project
+
+NotiFlow is an independent fork of **NotiFilter**, originally created by Aditya Rajput / BURG3R5.
+
+Original project:
+
+**https://github.com/BURG3R5/NotiFilter**
+
+NotiFlow keeps the powerful rule-based notification management foundation of NotiFilter while expanding it with features such as more flexible scheduling, multiple time ranges per day, application-wide notification matching, additional localization work, independent branding, and continued experimentation around notification control.
+
+The original NotiFilter wiki remains a useful reference for functionality inherited from the upstream project:
+
+**https://github.com/BURG3R5/NotiFilter/wiki**
+
+## 📜 License
+
+NotiFlow is free and open-source software licensed under the **GNU General Public License v3.0 (GPLv3)**, in accordance with the license of the original NotiFilter project.
+
+See the [license](license) file for the complete license text.
+
+Contributions and improvements are welcome.
