@@ -33,17 +33,11 @@ fun AppBar(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
         navigationIcon = {
-            IconButton(leadingIconOnClick) {
-                if (canNavigateBack) {
+            if (canNavigateBack) {
+                IconButton(leadingIconOnClick) {
                     Icon(
                         painterResource(R.drawable.arrow_back),
                         stringResource(R.string.alttext_back_button),
-                    )
-                } else {
-                    Icon(
-                        painterResource(R.drawable.notiflow_toolbar),
-                        stringResource(R.string.alttext_app_logo),
-                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
