@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class RegexTarget(val description: Int? = null) {
+    ALL(R.string.all_notifications),
     TITLE(R.string.title),
     CONTENT(R.string.content),
     OR(R.string.title_or_content),
