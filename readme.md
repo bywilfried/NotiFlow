@@ -112,6 +112,17 @@ NotiFlow uses separate Android application IDs for development and release build
 
 Development and release builds are signed independently from the original NotiFilter application and therefore do not replace an existing NotiFilter installation.
 
+## 🔎 APK verification
+
+SHA-256 checksums for the currently verified signed APK builds:
+
+| APK | SHA-256 |
+| --- | --- |
+| `NotiFlow-app-dev.apk` | `eecda586ea933a8704f04d1a203499bf397aa0609592097c4e5eb758878a3a3f` |
+| `NotiFlow-app-release.apk` | `5a2cbba6bb15f2ca35f2de4dae0888c3b1dd2a31a30431239bff21854b25d219` |
+
+These hashes identify these exact APK files. They will change whenever a new APK build is produced.
+
 ## 🛠️ Building
 
 The project is an Android/Gradle project. GitHub Actions can build the development and release APK variants from the repository workflow.
