@@ -41,8 +41,9 @@ fun AppBar(
                     )
                 } else {
                     Icon(
-                        painterResource(R.drawable.notifications_off),
+                        painterResource(R.drawable.notiflow_toolbar),
                         stringResource(R.string.alttext_app_logo),
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
