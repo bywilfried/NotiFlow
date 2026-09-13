@@ -34,7 +34,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew app:assembleNightly app:assembleRelease
+        run: |
+          ./gradlew app:assembleNightly
+          ./gradlew app:assembleRelease
 
       - name: Prepare APK files
         run: |
