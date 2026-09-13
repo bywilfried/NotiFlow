@@ -113,6 +113,7 @@ class UpsertFilterViewModel(
             FormPage.PACKAGE -> if (values.app == None) return FormError.BLANK_FIELDS
 
             FormPage.PATTERN -> {
+                if (values.regexTarget == RegexTarget.ALL) return null
                 if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
 
                 if (values.regexTarget != RegexTarget.EXPRESSION) {
@@ -156,6 +157,7 @@ class UpsertFilterViewModel(
         values: Values = state.values,
     ): List<FormWarning> {
         if (page != FormPage.PATTERN || values.notification == null) return listOf()
+        if (values.regexTarget == RegexTarget.ALL) return listOf()
 
         try {
             val regexTarget = values.regexTarget
