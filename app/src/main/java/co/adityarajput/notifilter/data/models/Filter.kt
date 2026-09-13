@@ -48,18 +48,22 @@ data class Filter(
 
     val title
         get() = buildString {
-            if (regexTarget == RegexTarget.EXPRESSION) {
-                append("`${regexPattern}`")
-            } else {
-                append("/${regexPattern}/")
+            when (regexTarget) {
+                RegexTarget.ALL -> append("*")
+                RegexTarget.EXPRESSION -> append("`${regexPattern}`")
+                else -> {
+                    append("/${regexPattern}/")
 
-                if (regexTarget == RegexTarget.AND)
-                    append(" && /${secondaryRegexPattern}/")
+                    if (regexTarget == RegexTarget.AND)
+                        append(" && /${secondaryRegexPattern}/")
+                }
             }
         }
 
     fun matchesTextOf(notification: Notification): Boolean {
         return when (regexTarget) {
+            RegexTarget.ALL -> true
+
             RegexTarget.TITLE ->
                 regexPattern.containsMatchIn(notification.title)
 
