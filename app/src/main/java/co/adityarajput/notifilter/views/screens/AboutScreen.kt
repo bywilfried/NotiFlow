@@ -40,7 +40,7 @@ fun AboutScreen(goBack: () -> Unit) {
             ) {
                 AboutCard {
                     Image(
-                        painterResource(R.drawable.notiflow_about_logo),
+                        painterResource(R.drawable.notiflow_icon_main),
                         stringResource(R.string.alttext_app_logo),
                         Modifier
                             .size(112.dp)
