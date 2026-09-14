@@ -157,7 +157,9 @@ class UpsertFilterViewModel(
         values: Values = state.values,
     ): List<FormWarning> {
         if (page != FormPage.PATTERN || values.notification == null) return listOf()
-        if (values.regexTarget == RegexTarget.ALL) return listOf()
+        if (values.regexTarget in listOf(RegexTarget.ALL, RegexTarget.CHANNEL, RegexTarget.CONTEXT)) {
+            return listOf()
+        }
 
         try {
             val regexTarget = values.regexTarget
