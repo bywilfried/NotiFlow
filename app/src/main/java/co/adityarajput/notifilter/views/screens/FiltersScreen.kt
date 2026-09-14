@@ -215,6 +215,18 @@ fun FiltersScreen(
                                     )
                                 }
                                 IconButton(
+                                    {
+                                        goToUpsertFilterScreen(
+                                            Json.encodeToString(it.copy(id = 0, hits = 0)),
+                                        )
+                                    },
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.duplicate),
+                                        stringResource(R.string.duplicate_filter),
+                                    )
+                                }
+                                IconButton(
                                     { viewModel.dialogState = FilterDialogState.DELETE },
                                     colors = IconButtonDefaults.iconButtonColors(
                                         contentColor = MaterialTheme.colorScheme.tertiary,
