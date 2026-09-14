@@ -3,6 +3,7 @@ package co.adityarajput.notifilter.data.models
 import android.app.Notification as AndroidNotification
 import android.app.Person
 import android.os.Bundle
+import android.service.notification.NotificationListenerService.Ranking
 import android.service.notification.StatusBarNotification
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -150,13 +151,11 @@ data class Notification(
 
         private fun resolveChannelName(sbn: StatusBarNotification): String {
             if (!NotificationListener.isServiceInitialized) return ""
-            val channelId = sbn.notification.channelId ?: return ""
             return runCatching {
-                NotificationListener.instance
-                    .getNotificationChannel(sbn.packageName, sbn.user, channelId)
-                    ?.name
-                    ?.toString()
-                    .orEmpty()
+                val ranking = Ranking()
+                val found = NotificationListener.instance.currentRanking
+                    .getRanking(sbn.key, ranking)
+                if (found) ranking.channel?.name?.toString().orEmpty() else ""
             }.getOrDefault("")
         }
 
