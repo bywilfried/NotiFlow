@@ -35,6 +35,26 @@ data class Notification(
      * backwards compatible.
      */
     @field:Ignore
+    var subText: String = ""
+        private set
+
+    @field:Ignore
+    var bigText: String = ""
+        private set
+
+    @field:Ignore
+    var summaryText: String = ""
+        private set
+
+    @field:Ignore
+    var textLines: String = ""
+        private set
+
+    @field:Ignore
+    var conversationTitle: String = ""
+        private set
+
+    @field:Ignore
     var channel: String = ""
         private set
 
@@ -68,12 +88,33 @@ data class Notification(
         sbn.notification.extras.getCharSequence(AndroidNotification.EXTRA_TEXT)?.toString() ?: "",
         sbn.packageName, sbn.postTime, showInHistory, showInWidget, id,
     ) {
+        val extras = sbn.notification.extras
+        subText = extras.getCharSequence(AndroidNotification.EXTRA_SUB_TEXT)?.toString() ?: ""
+        bigText = extras.getCharSequence(AndroidNotification.EXTRA_BIG_TEXT)?.toString() ?: ""
+        summaryText = extras.getCharSequence(AndroidNotification.EXTRA_SUMMARY_TEXT)?.toString() ?: ""
+        textLines = extras.getCharSequenceArray(AndroidNotification.EXTRA_TEXT_LINES)
+            ?.joinToString("\n") { it.toString() }
+            ?: ""
+        conversationTitle = extras.getCharSequence(AndroidNotification.EXTRA_CONVERSATION_TITLE)
+            ?.toString()
+            ?: ""
         channel = sbn.notification.channelId ?: ""
-        contextualData = extractContextualText(sbn.notification.extras)
+        contextualData = extractContextualText(extras)
         tag = sbn.tag ?: ""
         group = sbn.groupKey ?: ""
         category = sbn.notification.category ?: ""
         shortcut = sbn.notification.shortcutId ?: ""
+    }
+
+    fun valueOf(field: NotificationField): String = when (field) {
+        NotificationField.TITLE -> title
+        NotificationField.CONTENT -> content
+        NotificationField.SUB_TEXT -> subText
+        NotificationField.BIG_TEXT -> bigText
+        NotificationField.SUMMARY_TEXT -> summaryText
+        NotificationField.TEXT_LINES -> textLines
+        NotificationField.CONVERSATION_TITLE -> conversationTitle
+        NotificationField.CHANNEL -> channel
     }
 
     val data get() = listOf(origin, title, content, timestamp)
