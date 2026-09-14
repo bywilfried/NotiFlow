@@ -14,7 +14,7 @@ data class Filter(
     @Embedded(prefix = "app_")
     val app: App,
 
-    // INFO: Can also hold an expression to be evaulated
+    // INFO: Can also hold an expression or a serialized NotificationSearchConfig.
     val regexPattern: String,
 
     val action: Action,
@@ -51,6 +51,16 @@ data class Filter(
             when (regexTarget) {
                 RegexTarget.ALL -> append("*")
                 RegexTarget.EXPRESSION -> append("`${regexPattern}`")
+                RegexTarget.SEARCH_FIELDS -> {
+                    val config = NotificationSearchConfig.decode(regexPattern)
+                    if (config.allFields) {
+                        append("/${config.allFieldsPattern}/")
+                    } else {
+                        append(config.criteria.joinToString(" | ") { criterion ->
+                            "${criterion.field.name.lowercase()}:/${criterion.pattern}/${if (criterion.required) "!" else ""}"
+                        })
+                    }
+                }
                 else -> {
                     append("/${regexPattern}/")
 
@@ -83,6 +93,9 @@ data class Filter(
 
             RegexTarget.CHANNEL ->
                 regexPattern.containsMatchIn(notification.channel)
+
+            RegexTarget.SEARCH_FIELDS ->
+                NotificationSearchConfig.decode(regexPattern).matches(notification)
 
             RegexTarget.EXPRESSION ->
                 regexPattern.evaluateAgainst(notification)
