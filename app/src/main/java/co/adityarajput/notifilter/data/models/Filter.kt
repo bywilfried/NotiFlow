@@ -78,6 +78,12 @@ data class Filter(
                 regexPattern.containsMatchIn(notification.title) &&
                         secondaryRegexPattern!!.containsMatchIn(notification.content)
 
+            RegexTarget.CONTEXT ->
+                regexPattern.containsMatchIn(notification.contextualData)
+
+            RegexTarget.CHANNEL ->
+                regexPattern.containsMatchIn(notification.channel)
+
             RegexTarget.EXPRESSION ->
                 regexPattern.evaluateAgainst(notification)
         }
