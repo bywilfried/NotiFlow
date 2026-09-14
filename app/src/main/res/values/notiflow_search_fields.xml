@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="match_all_notifications">All notifications</string>
+    <string name="match_search_notification">Search for a term in the notification</string>
+    <string name="match_advanced_expression">Advanced expression</string>
+    <string name="search_all_fields">All fields listed below</string>
+    <string name="search_all_fields_hint">Searches title, content, subtext, expanded text, summary, text lines, conversation title and notification channel.</string>
+    <string name="search_individual_fields">Or choose fields individually</string>
+    <string name="search_required">Required</string>
+    <string name="search_required_hint">Required fields must match. Other selected fields are combined with OR.</string>
+    <string name="search_term">Term or regular expression</string>
+    <string name="notification_field_title">Title</string>
+    <string name="notification_field_content">Content</string>
+    <string name="notification_field_subtext">Subtext</string>
+    <string name="notification_field_big_text">Expanded text</string>
+    <string name="notification_field_summary">Summary</string>
+    <string name="notification_field_text_lines">Text lines</string>
+    <string name="notification_field_conversation">Conversation title</string>
+    <string name="notification_field_channel">Notification channel</string>
+</resources>
