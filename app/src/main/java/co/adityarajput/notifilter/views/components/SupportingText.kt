@@ -14,39 +14,37 @@ import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 
 @Composable
 fun SupportingText(viewModel: UpsertFilterViewModel, isPrimaryPattern: Boolean) {
-    if (viewModel.state.values.notification == null) return
+    val notification = viewModel.state.values.notification ?: return
 
-    if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) return
+    if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION ||
+        viewModel.state.values.regexTarget == RegexTarget.ALL
+    ) return
 
-    val title = viewModel.state.values.notification!!.title
-    val content = viewModel.state.values.notification!!.content
+    val title = notification.title
+    val content = notification.content
+    val context = notification.contextualData
+    val channel = notification.channel
 
-    val target = (title.getFirst(20) to content.getFirst(20)).let { (title, content) ->
-        when (viewModel.state.values.regexTarget) {
-            RegexTarget.TITLE -> title
-
-            RegexTarget.CONTENT -> content
-
-            RegexTarget.OR -> "$title' ${stringResource(R.string.or)} '$content"
-
-            RegexTarget.AND if (isPrimaryPattern) -> title
-
-            else -> content
-        }
+    val target = when (viewModel.state.values.regexTarget) {
+        RegexTarget.TITLE -> title.getFirst(20)
+        RegexTarget.CONTENT -> content.getFirst(20)
+        RegexTarget.OR -> "${title.getFirst(20)}' ${stringResource(R.string.or)} '${content.getFirst(20)}"
+        RegexTarget.AND -> if (isPrimaryPattern) title.getFirst(20) else content.getFirst(20)
+        RegexTarget.CONTEXT -> context.getFirst(40)
+        RegexTarget.CHANNEL -> channel.getFirst(40)
+        else -> ""
     }
 
-    val pattern = (title.generateRegex() to content.generateRegex()).let { (title, content) ->
-        when (viewModel.state.values.regexTarget) {
-            RegexTarget.TITLE -> title
+    if (target.isBlank()) return
 
-            RegexTarget.CONTENT -> content
-
-            RegexTarget.OR -> "$title|$content"
-
-            RegexTarget.AND if (isPrimaryPattern) -> title
-
-            else -> content
-        }
+    val pattern = when (viewModel.state.values.regexTarget) {
+        RegexTarget.TITLE -> title.generateRegex()
+        RegexTarget.CONTENT -> content.generateRegex()
+        RegexTarget.OR -> "${title.generateRegex()}|${content.generateRegex()}"
+        RegexTarget.AND -> if (isPrimaryPattern) title.generateRegex() else content.generateRegex()
+        RegexTarget.CONTEXT -> context.generateRegex()
+        RegexTarget.CHANNEL -> channel.generateRegex()
+        else -> ""
     }
 
     Text(
