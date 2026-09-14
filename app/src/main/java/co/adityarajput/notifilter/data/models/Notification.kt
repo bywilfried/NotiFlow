@@ -8,6 +8,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import co.adityarajput.notifilter.services.NotificationListener
 import kotlin.math.abs
 
 @Entity(tableName = "notifications")
@@ -87,7 +88,7 @@ data class Notification(
         showInHistory: Boolean = true,
         showInWidget: Boolean = false,
         id: Int = 0,
-        channelName: String = "",
+        channelName: String = resolveChannelName(sbn),
     ) : this(
         sbn.notification.extras.getString(AndroidNotification.EXTRA_TITLE) ?: "",
         sbn.notification.extras.getCharSequence(AndroidNotification.EXTRA_TEXT)?.toString() ?: "",
@@ -146,6 +147,18 @@ data class Notification(
             AndroidNotification.EXTRA_TITLE,
             AndroidNotification.EXTRA_TEXT,
         )
+
+        private fun resolveChannelName(sbn: StatusBarNotification): String {
+            if (!NotificationListener.isServiceInitialized) return ""
+            val channelId = sbn.notification.channelId ?: return ""
+            return runCatching {
+                NotificationListener.instance
+                    .getNotificationChannel(sbn.packageName, sbn.user, channelId)
+                    ?.name
+                    ?.toString()
+                    .orEmpty()
+            }.getOrDefault("")
+        }
 
         private fun extractContextualText(extras: Bundle): String =
             extras.keySet()
