@@ -59,6 +59,10 @@ data class Notification(
         private set
 
     @field:Ignore
+    var channelName: String = ""
+        private set
+
+    @field:Ignore
     var contextualData: String = ""
         private set
 
@@ -83,6 +87,7 @@ data class Notification(
         showInHistory: Boolean = true,
         showInWidget: Boolean = false,
         id: Int = 0,
+        channelName: String = "",
     ) : this(
         sbn.notification.extras.getString(AndroidNotification.EXTRA_TITLE) ?: "",
         sbn.notification.extras.getCharSequence(AndroidNotification.EXTRA_TEXT)?.toString() ?: "",
@@ -99,6 +104,7 @@ data class Notification(
             ?.toString()
             ?: ""
         channel = sbn.notification.channelId ?: ""
+        this.channelName = channelName
         contextualData = extractContextualText(extras)
         tag = sbn.tag ?: ""
         group = sbn.groupKey ?: ""
@@ -114,7 +120,10 @@ data class Notification(
         NotificationField.SUMMARY_TEXT -> summaryText
         NotificationField.TEXT_LINES -> textLines
         NotificationField.CONVERSATION_TITLE -> conversationTitle
-        NotificationField.CHANNEL -> channel
+        NotificationField.CHANNEL -> listOf(channelName, channel)
+            .filter { it.isNotBlank() }
+            .distinct()
+            .joinToString("\n")
     }
 
     val data get() = listOf(origin, title, content, timestamp)
