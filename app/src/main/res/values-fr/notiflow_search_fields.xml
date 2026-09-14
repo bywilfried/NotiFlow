@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="match_all_notifications">Toutes les notifications</string>
+    <string name="match_search_notification">Rechercher un terme dans la notification</string>
+    <string name="match_advanced_expression">Expression avancée</string>
+    <string name="search_all_fields">Tous les champs proposés ci-dessous</string>
+    <string name="search_all_fields_hint">Recherche dans le titre, le contenu, le sous-texte, le texte étendu, le résumé, les lignes de texte, le titre de conversation et le canal de notification.</string>
+    <string name="search_individual_fields">Ou choisir les champs individuellement</string>
+    <string name="search_required">Obligatoire</string>
+    <string name="search_required_hint">Les champs obligatoires doivent correspondre. Les autres champs sélectionnés sont combinés avec OU.</string>
+    <string name="search_term">Terme ou expression régulière</string>
+    <string name="notification_field_title">Titre</string>
+    <string name="notification_field_content">Contenu</string>
+    <string name="notification_field_subtext">Sous-texte</string>
+    <string name="notification_field_big_text">Texte étendu</string>
+    <string name="notification_field_summary">Résumé</string>
+    <string name="notification_field_text_lines">Lignes de texte</string>
+    <string name="notification_field_conversation">Titre de conversation</string>
+    <string name="notification_field_channel">Canal de notification</string>
+</resources>
