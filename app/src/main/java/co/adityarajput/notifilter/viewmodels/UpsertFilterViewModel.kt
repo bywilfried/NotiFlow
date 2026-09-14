@@ -22,6 +22,51 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
+private fun Filter.searchConfig(): NotificationSearchConfig = when (regexTarget) {
+    RegexTarget.SEARCH_FIELDS -> NotificationSearchConfig.decode(regexPattern)
+    RegexTarget.TITLE -> NotificationSearchConfig(
+        criteria = listOf(NotificationFieldCriterion(NotificationField.TITLE, regexPattern)),
+    )
+    RegexTarget.CONTENT -> NotificationSearchConfig(
+        criteria = listOf(NotificationFieldCriterion(NotificationField.CONTENT, regexPattern)),
+    )
+    RegexTarget.OR -> NotificationSearchConfig(
+        criteria = listOf(
+            NotificationFieldCriterion(NotificationField.TITLE, regexPattern),
+            NotificationFieldCriterion(NotificationField.CONTENT, regexPattern),
+        ),
+    )
+    RegexTarget.AND -> NotificationSearchConfig(
+        criteria = listOf(
+            NotificationFieldCriterion(NotificationField.TITLE, regexPattern, required = true),
+            NotificationFieldCriterion(
+                NotificationField.CONTENT,
+                secondaryRegexPattern ?: "",
+                required = true,
+            ),
+        ),
+    )
+    RegexTarget.CONTEXT -> NotificationSearchConfig(
+        criteria = listOf(
+            NotificationFieldCriterion(NotificationField.SUB_TEXT, regexPattern),
+            NotificationFieldCriterion(NotificationField.BIG_TEXT, regexPattern),
+            NotificationFieldCriterion(NotificationField.SUMMARY_TEXT, regexPattern),
+            NotificationFieldCriterion(NotificationField.TEXT_LINES, regexPattern),
+            NotificationFieldCriterion(NotificationField.CONVERSATION_TITLE, regexPattern),
+        ),
+    )
+    RegexTarget.CHANNEL -> NotificationSearchConfig(
+        criteria = listOf(NotificationFieldCriterion(NotificationField.CHANNEL, regexPattern)),
+    )
+    else -> NotificationSearchConfig()
+}
+
+private fun Filter.editTarget(): RegexTarget = when (regexTarget) {
+    RegexTarget.ALL -> RegexTarget.ALL
+    RegexTarget.EXPRESSION -> RegexTarget.EXPRESSION
+    else -> RegexTarget.SEARCH_FIELDS
+}
+
 class UpsertFilterViewModel(
     filter: Filter?,
     private val repository: Repository,
@@ -38,9 +83,10 @@ class UpsertFilterViewModel(
         val filterId: Int = 0,
         val notification: Notification? = null,
         val app: App = None,
-        val regexTarget: RegexTarget = RegexTarget.OR,
+        val regexTarget: RegexTarget = RegexTarget.SEARCH_FIELDS,
         val queryPattern: String = "",
         val secondaryQueryPattern: String = "",
+        val searchConfig: NotificationSearchConfig = NotificationSearchConfig(),
         val action: Action = Action.DISMISS,
         val schedule: Schedule = Schedule(),
         val historyEnabled: Boolean = true,
@@ -48,20 +94,39 @@ class UpsertFilterViewModel(
         val priority: Int = 0,
     ) {
         constructor(filter: Filter) : this(
-            filter.id, null, filter.app, filter.regexTarget,
-            filter.regexPattern, filter.secondaryRegexPattern ?: "",
-            filter.action, filter.schedule, filter.historyEnabled, filter.widgetEnabled,
-            filter.priority,
+            filterId = filter.id,
+            app = filter.app,
+            regexTarget = filter.editTarget(),
+            queryPattern = if (filter.regexTarget == RegexTarget.EXPRESSION) filter.regexPattern else "",
+            searchConfig = filter.searchConfig(),
+            action = filter.action,
+            schedule = filter.schedule,
+            historyEnabled = filter.historyEnabled,
+            widgetEnabled = filter.widgetEnabled,
+            priority = filter.priority,
         )
 
-        fun toFilter() = Filter(
-            app, queryPattern, action, regexTarget,
-            if (regexTarget == RegexTarget.AND) secondaryQueryPattern else null, schedule,
-            historyEnabled = historyEnabled,
-            widgetEnabled = widgetEnabled,
-            id = filterId,
-            priority = if (filterId == 0) Int.MAX_VALUE else priority,
-        )
+        fun toFilter(): Filter {
+            val storedPattern = when (regexTarget) {
+                RegexTarget.ALL -> ""
+                RegexTarget.SEARCH_FIELDS -> searchConfig.encode()
+                RegexTarget.EXPRESSION -> queryPattern
+                else -> queryPattern
+            }
+
+            return Filter(
+                app = app,
+                regexPattern = storedPattern,
+                action = action,
+                regexTarget = regexTarget,
+                secondaryRegexPattern = null,
+                schedule = schedule,
+                historyEnabled = historyEnabled,
+                widgetEnabled = widgetEnabled,
+                id = filterId,
+                priority = if (filterId == 0) Int.MAX_VALUE else priority,
+            )
+        }
     }
 
     var state by mutableStateOf(
@@ -112,23 +177,37 @@ class UpsertFilterViewModel(
 
             FormPage.PACKAGE -> if (values.app == None) return FormError.BLANK_FIELDS
 
-            FormPage.PATTERN -> {
-                if (values.regexTarget == RegexTarget.ALL) return null
-                if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
+            FormPage.PATTERN -> when (values.regexTarget) {
+                RegexTarget.ALL -> return null
 
-                if (values.regexTarget != RegexTarget.EXPRESSION) {
-                    if (!values.queryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
-
-                    if (values.regexTarget == RegexTarget.AND) {
-                        if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
-                        if (!values.secondaryQueryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
+                RegexTarget.SEARCH_FIELDS -> {
+                    val config = values.searchConfig
+                    if (config.allFields) {
+                        if (config.allFieldsPattern.isBlank()) return FormError.BLANK_FIELDS
+                        if (!config.allFieldsPattern.isValidRegex()) {
+                            return FormError.INVALID_NOTIFICATION_REGEX
+                        }
+                    } else {
+                        if (config.criteria.isEmpty()) return FormError.BLANK_FIELDS
+                        if (config.criteria.any { it.pattern.isBlank() }) return FormError.BLANK_FIELDS
+                        if (config.criteria.any { !it.pattern.isValidRegex() }) {
+                            return FormError.INVALID_NOTIFICATION_REGEX
+                        }
                     }
-                } else {
+                }
+
+                RegexTarget.EXPRESSION -> {
+                    if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
                     try {
                         values.queryPattern.evaluateAgainst(values.notification)
                     } catch (_: Exception) {
                         return FormError.INVALID_EXPRESSION
                     }
+                }
+
+                else -> {
+                    if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
+                    if (!values.queryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
                 }
             }
 
@@ -157,7 +236,7 @@ class UpsertFilterViewModel(
         values: Values = state.values,
     ): List<FormWarning> {
         if (page != FormPage.PATTERN || values.notification == null) return listOf()
-        if (values.regexTarget in listOf(RegexTarget.ALL, RegexTarget.CHANNEL, RegexTarget.CONTEXT)) {
+        if (values.regexTarget == RegexTarget.ALL || values.regexTarget == RegexTarget.SEARCH_FIELDS) {
             return listOf()
         }
 
@@ -178,10 +257,6 @@ class UpsertFilterViewModel(
             if (
                 (regexTarget == RegexTarget.CONTENT || regexTarget == RegexTarget.OR)
                 && !values.queryPattern.containsMatchIn(notification.content)
-            ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
-            if (
-                regexTarget == RegexTarget.AND &&
-                !values.secondaryQueryPattern.containsMatchIn(notification.content)
             ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
 
             return warnings
