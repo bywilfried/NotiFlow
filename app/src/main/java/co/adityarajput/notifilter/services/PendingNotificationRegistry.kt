@@ -23,9 +23,7 @@ object PendingNotificationRegistry {
         )
     }
 
-    fun remove(key: String) {
-        _entries.value = _entries.value - key
-    }
+    fun remove(key: String) { _entries.value = _entries.value - key }
 
     /** Android is truth: remove local entries no longer present in getSnoozedNotifications(). */
     fun reconcile(snoozed: Array<StatusBarNotification>) {
@@ -33,22 +31,13 @@ object PendingNotificationRegistry {
         _entries.value = _entries.value.filterKeys { it in liveKeys }
     }
 
-    /** Safe reconciliation helper for UI/service refresh points (API 26+). */
     fun reconcileWithAndroid(listener: NotificationListener) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-        runCatching { listener.snoozedNotifications }
-            .onSuccess(::reconcile)
+        runCatching { listener.snoozedNotifications }.onSuccess(::reconcile)
     }
 
     fun all(): List<PendingNotification> = entries.value.values.toList()
-
-    fun forFilter(filterId: Int): List<PendingNotification> =
-        entries.value.values.filter { it.filterId == filterId }
-
-    fun countForFilter(filterId: Int): Int =
-        entries.value.values.count { it.filterId == filterId }
-
-    fun clear() {
-        _entries.value = emptyMap()
-    }
+    fun forFilter(filterId: Int): List<PendingNotification> = entries.value.values.filter { it.filterId == filterId }
+    fun countForFilter(filterId: Int): Int = entries.value.values.count { it.filterId == filterId }
+    fun clear() { _entries.value = emptyMap() }
 }
