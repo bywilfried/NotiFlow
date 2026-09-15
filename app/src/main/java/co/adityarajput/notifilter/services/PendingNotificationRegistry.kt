@@ -12,15 +12,8 @@ object PendingNotificationRegistry {
     private val _entries = MutableStateFlow<Map<String, PendingNotification>>(emptyMap())
     val entries: StateFlow<Map<String, PendingNotification>> = _entries.asStateFlow()
 
-    fun record(
-        sbn: StatusBarNotification,
-        filterId: Int,
-        snoozedAt: Long,
-        committedUntil: Long,
-    ) {
-        _entries.value = _entries.value + (
-            sbn.key to PendingNotification.from(sbn, filterId, snoozedAt, committedUntil)
-        )
+    fun record(sbn: StatusBarNotification, filterId: Int, snoozedAt: Long, committedUntil: Long) {
+        _entries.value = _entries.value + (sbn.key to PendingNotification.from(sbn, filterId, snoozedAt, committedUntil))
     }
 
     fun remove(key: String) { _entries.value = _entries.value - key }
