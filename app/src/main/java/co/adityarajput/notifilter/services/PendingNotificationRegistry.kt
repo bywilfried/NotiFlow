@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.services
 
+import android.os.Build
 import android.service.notification.StatusBarNotification
 import co.adityarajput.notifilter.data.models.PendingNotification
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +33,9 @@ object PendingNotificationRegistry {
         _entries.value = _entries.value.filterKeys { it in liveKeys }
     }
 
-    /** Safe reconciliation helper for UI/service refresh points. */
+    /** Safe reconciliation helper for UI/service refresh points (API 26+). */
     fun reconcileWithAndroid(listener: NotificationListener) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         runCatching { listener.snoozedNotifications }
             .onSuccess(::reconcile)
     }
