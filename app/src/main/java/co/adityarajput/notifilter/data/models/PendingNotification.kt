@@ -12,17 +12,13 @@ data class PendingNotification(
     val committedUntil: Long,
 ) {
     companion object {
-        fun from(
-            sbn: StatusBarNotification,
-            filterId: Int,
-            snoozedAt: Long,
-            committedUntil: Long,
-        ) = PendingNotification(
-            key = sbn.key,
-            filterId = filterId,
-            notification = Notification(sbn),
-            snoozedAt = snoozedAt,
-            committedUntil = committedUntil,
-        )
+        fun from(sbn: StatusBarNotification, filterId: Int, snoozedAt: Long, committedUntil: Long) =
+            PendingNotification(
+                key = sbn.key,
+                filterId = filterId,
+                notification = Notification(sbn),
+                snoozedAt = snoozedAt,
+                committedUntil = committedUntil,
+            )
     }
 }
