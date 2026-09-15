@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pending_notifications">Notifications pending</string>
+    <string name="pending_notification_count">%1$d notifications pending</string>
+    <string name="pending_release_planned">Planned release: %1$s</string>
+    <string name="pending_release_never">Never</string>
+    <string name="pending_help_title">About pending notifications</string>
+    <string name="pending_help_text">This list shows notifications currently held for later delivery by NotiFlow. A notification may disappear before its planned release if the originating app cancels or replaces it, or if its content is read, deleted, moved or otherwise handled, including from another device. The planned release time is a forecast based on the current schedule and the snooze already committed to Android.</string>
+    <string name="open_notification_title">Open this notification?</string>
+    <string name="open_notification_warning">Opening the content associated with this notification may cause the app or Android to consider it read or handled and cancel the notification. For a pending notification, this can prevent it from appearing again at its planned release time.</string>
+    <string name="open_notification_confirm">Open</string>
+    <string name="open_notification_cancel">Cancel</string>
+</resources>
