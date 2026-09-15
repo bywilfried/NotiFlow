@@ -26,13 +26,16 @@ object PendingNotificationRegistry {
         _entries.value = _entries.value - key
     }
 
-    /**
-     * Android is the source of truth. Local entries absent from getSnoozedNotifications()
-     * are removed; Android snoozes unknown to NotiFlow are deliberately not imported.
-     */
+    /** Android is truth: remove local entries no longer present in getSnoozedNotifications(). */
     fun reconcile(snoozed: Array<StatusBarNotification>) {
         val liveKeys = snoozed.asSequence().map { it.key }.toSet()
         _entries.value = _entries.value.filterKeys { it in liveKeys }
+    }
+
+    /** Safe reconciliation helper for UI/service refresh points. */
+    fun reconcileWithAndroid(listener: NotificationListener) {
+        runCatching { listener.snoozedNotifications }
+            .onSuccess(::reconcile)
     }
 
     fun all(): List<PendingNotification> = entries.value.values.toList()
