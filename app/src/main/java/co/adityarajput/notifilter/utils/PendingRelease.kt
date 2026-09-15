@@ -1,22 +1,26 @@
 package co.adityarajput.notifilter.utils
 
-import co.adityarajput.notifilter.data.models.Schedule
 import java.time.ZonedDateTime
 
 /**
- * Forecasting is intentionally kept separate from the Android snooze deadline.
- * The committed deadline is immutable once handed to Android; future schedule ranges may
- * extend the displayed forecast, but a later edit must never move it before this lower bound.
+ * Release prediction state for a snoozed notification.
+ * [committedUntil] is the deadline already handed to Android and therefore a hard lower bound.
+ * [predictedRelease] may move as future, not-yet-committed schedule ranges are edited.
+ * A null prediction represents a schedule with no currently foreseeable release ("Never").
  */
 data class PendingReleaseForecast(
     val committedUntil: ZonedDateTime,
     val predictedRelease: ZonedDateTime?,
 ) {
     val isContinuous: Boolean get() = predictedRelease == null
+
+    fun withPrediction(candidate: ZonedDateTime?): PendingReleaseForecast {
+        val bounded = candidate?.let { if (it.isBefore(committedUntil)) committedUntil else it }
+        return copy(predictedRelease = bounded)
+    }
 }
 
-/** Creates the immutable lower-bound state used by the pending-notification UI. */
-fun Schedule.pendingReleaseLowerBound(committedUntil: ZonedDateTime) =
+fun pendingReleaseLowerBound(committedUntil: ZonedDateTime) =
     PendingReleaseForecast(
         committedUntil = committedUntil,
         predictedRelease = committedUntil,
