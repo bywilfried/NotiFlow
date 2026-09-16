@@ -15,56 +15,26 @@ import kotlinx.serialization.Serializable
 @Composable
 fun Navigator(controller: NavHostController) {
     val hasPermission = remember { controller.context.isGranted(Permission.NOTIFICATION_LISTENER) }
-
-    NavHost(
-        controller,
-        when {
-            hasPermission -> Routes.FILTERS.name
-            else -> Routes.ONBOARDING.name
-        },
-    ) {
-        composable(Routes.ONBOARDING.name) {
-            OnboardingScreen {
-                controller.navigate(
-                    Routes.FILTERS.name,
-                    NavOptions.Builder().setPopUpTo(Routes.ONBOARDING.name, true).build(),
-                )
-            }
-        }
+    NavHost(controller, if (hasPermission) Routes.FILTERS.name else Routes.ONBOARDING.name) {
+        composable(Routes.ONBOARDING.name) { OnboardingScreen { controller.navigate(Routes.FILTERS.name, NavOptions.Builder().setPopUpTo(Routes.ONBOARDING.name, true).build()) } }
         composable(Routes.FILTERS.name) {
             FiltersScreen(
                 { controller.navigate(UpsertFilterRoute(it)) },
                 { controller.navigate(Routes.NOTIFICATIONS.name) },
+                { controller.navigate(PendingNotificationsRoute()) },
+                { id -> controller.navigate(PendingNotificationsRoute(id)) },
                 { controller.navigate(Routes.SETTINGS.name) },
             )
         }
-        composable<UpsertFilterRoute> {
-            UpsertFilterScreen(
-                it.toRoute<UpsertFilterRoute>().filterString,
-                controller::popBackStack,
-            )
-        }
+        composable<UpsertFilterRoute> { UpsertFilterScreen(it.toRoute<UpsertFilterRoute>().filterString, controller::popBackStack) }
         composable(Routes.NOTIFICATIONS.name) { NotificationsScreen(controller::popBackStack) }
-        composable(Routes.SETTINGS.name) {
-            SettingsScreen(
-                { controller.navigate(Routes.LICENSES.name) },
-                { controller.navigate(Routes.ABOUT.name) },
-                controller::popBackStack,
-            )
-        }
+        composable<PendingNotificationsRoute> { PendingNotificationsScreen(it.toRoute<PendingNotificationsRoute>().filterId, controller::popBackStack) }
+        composable(Routes.SETTINGS.name) { SettingsScreen({ controller.navigate(Routes.LICENSES.name) }, { controller.navigate(Routes.ABOUT.name) }, controller::popBackStack) }
         composable(Routes.LICENSES.name) { LicensesScreen(controller::popBackStack) }
         composable(Routes.ABOUT.name) { AboutScreen(controller::popBackStack) }
     }
 }
 
-enum class Routes {
-    ONBOARDING,
-    FILTERS,
-    NOTIFICATIONS,
-    SETTINGS,
-    LICENSES,
-    ABOUT,
-}
-
-@Serializable
-data class UpsertFilterRoute(val filterString: String = "null")
+enum class Routes { ONBOARDING, FILTERS, NOTIFICATIONS, SETTINGS, LICENSES, ABOUT }
+@Serializable data class UpsertFilterRoute(val filterString: String = "null")
+@Serializable data class PendingNotificationsRoute(val filterId: Int? = null)
