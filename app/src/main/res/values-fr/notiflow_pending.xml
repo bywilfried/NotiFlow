@@ -8,7 +8,8 @@
     <string name="pending_help_title">À propos des notifications en attente</string>
     <string name="pending_help_text">Cette liste affiche les notifications actuellement retenues par NotiFlow pour être délivrées plus tard. Une notification peut disparaître avant sa libération prévue si l’application d’origine l’annule ou la remplace, ou si son contenu est lu, supprimé, déplacé ou traité, y compris depuis un autre appareil. L’heure de libération est une prévision basée sur le planning actuel et sur le snooze déjà confié à Android.</string>
     <string name="open_notification_title">Ouvrir cette notification ?</string>
-    <string name="open_notification_warning">Ouvrir le contenu associé à cette notification peut amener l’application ou Android à le considérer comme lu ou traité et à annuler la notification. Pour une notification en attente, cela peut empêcher sa réapparition à l’heure de libération prévue.</string>
+    <string name="open_notification_warning">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité et annuler la notification. Pour une notification en attente, cela peut empêcher sa réapparition à l’heure prévue.</string>
+    <string name="open_notification_warning_history">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité.</string>
     <string name="open_notification_confirm">Ouvrir</string>
     <string name="open_notification_cancel">Annuler</string>
 </resources>
