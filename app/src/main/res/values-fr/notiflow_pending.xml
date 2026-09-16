@@ -3,10 +3,12 @@
     <string name="pending_notifications">Notifications en attente</string>
     <string name="no_pending_notifications">Aucune notification n’est actuellement en attente</string>
     <string name="pending_notification_count">%1$d notifications en attente</string>
+    <string name="pending_filter_by_filter">Filtrer par filtre</string>
+    <string name="pending_all_filters">Tous les filtres</string>
     <string name="pending_release_planned">Libération prévue : %1$s</string>
     <string name="pending_release_never">Jamais</string>
     <string name="pending_help_title">À propos des notifications en attente</string>
-    <string name="pending_help_text">Cette liste affiche les notifications actuellement retenues par NotiFlow pour être délivrées plus tard. Une notification peut disparaître avant sa libération prévue si l’application d’origine l’annule ou la remplace, ou si son contenu est lu, supprimé, déplacé ou traité, y compris depuis un autre appareil. L’heure de libération est une prévision basée sur le planning actuel et sur le snooze déjà confié à Android.</string>
+    <string name="pending_help_text">Cette liste affiche les notifications actuellement retenues par NotiFlow pour être délivrées plus tard. Une notification peut disparaître avant sa libération prévue si l’application d’origine l’annule ou la remplace, ou si son contenu est lu, supprimé, déplacé ou traité, y compris depuis un autre appareil. L’heure de libération est recalculée à partir des filtres actifs actuels, sans jamais revenir avant une échéance de snooze déjà confiée à Android.</string>
     <string name="open_notification_title">Ouvrir cette notification ?</string>
     <string name="open_notification_warning">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité et annuler la notification. Pour une notification en attente, cela peut empêcher sa réapparition à l’heure prévue.</string>
     <string name="open_notification_warning_history">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité.</string>
