@@ -3,10 +3,12 @@
     <string name="pending_notifications">Notifications pending</string>
     <string name="no_pending_notifications">No notifications are currently pending</string>
     <string name="pending_notification_count">%1$d notifications pending</string>
+    <string name="pending_filter_by_filter">Filter by rule</string>
+    <string name="pending_all_filters">All rules</string>
     <string name="pending_release_planned">Planned release: %1$s</string>
     <string name="pending_release_never">Never</string>
     <string name="pending_help_title">About pending notifications</string>
-    <string name="pending_help_text">This list shows notifications currently held for later delivery by NotiFlow. A notification may disappear before its planned release if the originating app cancels or replaces it, or if its content is read, deleted, moved or otherwise handled, including from another device. The planned release time is a forecast based on the current schedule and the snooze already committed to Android.</string>
+    <string name="pending_help_text">This list shows notifications currently held for later delivery by NotiFlow. A notification may disappear before its planned release if the originating app cancels or replaces it, or if its content is read, deleted, moved or otherwise handled, including from another device. The planned release time is recalculated from the current enabled rules, while never moving before a snooze deadline already committed to Android.</string>
     <string name="open_notification_title">Open this notification?</string>
     <string name="open_notification_warning">Opening the content associated with this notification may cause the app or Android to consider it read or handled and cancel the notification. For a pending notification, this can prevent it from appearing again at its planned release time.</string>
     <string name="open_notification_warning_history">You are about to open the content associated with this notification. The originating app may then consider the content read or handled.</string>
