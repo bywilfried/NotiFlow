@@ -4,11 +4,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,69 +26,26 @@ fun Tile(
     buttons: @Composable RowScope.() -> Unit = {},
     expanded: Boolean = false,
     dividerBetweenTitleAndContent: Boolean = false,
+    prominentStatus: String? = null,
+    onProminentStatusClick: (() -> Unit)? = null,
 ) {
-    Card(
-        Modifier
-            .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.padding_small))
-            .animateContentSize(
-                tween(
-                    durationMillis = 300,
-                    easing = LinearOutSlowInEasing,
-                ),
-            )
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick ?: onClick,
-            ),
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.padding_large)),
-            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-        ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                Arrangement.SpaceBetween,
-                Alignment.CenterVertically,
-            ) {
-                Text(
-                    leading,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        MaterialTheme.colorScheme.onSurfaceVariant,
-                        11.sp,
-                    ),
-                )
-                if (trailing != null)
-                    Text(
-                        trailing,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            MaterialTheme.colorScheme.onSurfaceVariant,
-                            8.sp,
-                        ),
-                    )
+    Card(Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_small)).animateContentSize(tween(300, easing = LinearOutSlowInEasing)).combinedClickable(onClick = onClick, onLongClick = onLongClick ?: onClick)) {
+        Column(Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_large)), Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                Text(leading, style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.onSurfaceVariant, 11.sp))
+                if (trailing != null) Text(trailing, style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.onSurfaceVariant, 8.sp))
             }
-            Text(
-                title,
-                style = MaterialTheme.typography.titleMedium,
+            if (prominentStatus != null) Text(
+                prominentStatus,
+                Modifier.then(if (onProminentStatusClick != null) Modifier.clickable(onClick = onProminentStatusClick) else Modifier),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
             )
+            Text(title, style = MaterialTheme.typography.titleMedium)
             if (dividerBetweenTitleAndContent) HorizontalDivider()
-            if (!preContent.isNullOrEmpty())
-                Text(
-                    preContent,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 11.sp,
-                )
-            Text(
-                content,
-                style = MaterialTheme.typography.bodySmall,
-            )
-            if (expanded) Row(
-                Modifier.fillMaxWidth(),
-                Arrangement.End,
-                Alignment.CenterVertically,
-            ) { buttons() }
+            if (!preContent.isNullOrEmpty()) Text(preContent, style = MaterialTheme.typography.bodySmall, fontSize = 11.sp)
+            Text(content, style = MaterialTheme.typography.bodySmall)
+            if (expanded) Row(Modifier.fillMaxWidth(), Arrangement.End, Alignment.CenterVertically) { buttons() }
         }
     }
 }
