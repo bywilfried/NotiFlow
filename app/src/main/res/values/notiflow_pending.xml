@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pending_notifications">Notifications pending</string>
+    <string name="no_pending_notifications">No notifications are currently pending</string>
     <string name="pending_notification_count">%1$d notifications pending</string>
     <string name="pending_release_planned">Planned release: %1$s</string>
     <string name="pending_release_never">Never</string>
