@@ -2,6 +2,7 @@ package co.adityarajput.notifilter.services
 
 import android.content.Context
 import android.service.notification.StatusBarNotification
+import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.data.models.PendingNotification
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,28 +10,43 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Persistent NotiFlow attribution, reconciled against Android's real snoozed notifications. */
+/** Persistent NotiFlow pending state. Android snoozes report presence, not ownership. */
 object PendingNotificationRegistry {
     private const val PREFS = "notiflow_pending_notifications"
     private const val KEY = "attributions"
 
-    private data class Attribution(val filterId: Int, val snoozedAt: Long, val committedUntil: Long)
     private val _entries = MutableStateFlow<Map<String, PendingNotification>>(emptyMap())
     val entries: StateFlow<Map<String, PendingNotification>> = _entries.asStateFlow()
-    private var attributions: Map<String, Attribution> = emptyMap()
     private var initialized = false
 
     @Synchronized
     fun initialize(context: Context) {
         if (initialized) return
         val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null)
-        attributions = runCatching {
+        _entries.value = runCatching {
             if (raw.isNullOrBlank()) emptyMap() else {
                 val array = JSONArray(raw)
                 buildMap {
                     for (i in 0 until array.length()) {
                         val o = array.getJSONObject(i)
-                        put(o.getString("key"), Attribution(o.getInt("filterId"), o.getLong("snoozedAt"), o.getLong("committedUntil")))
+                        // Legacy entries did not contain a notification snapshot and cannot be
+                        // restored safely. New entries are self-contained after their first record.
+                        if (!o.has("notification")) continue
+                        val n = o.getJSONObject("notification")
+                        val pending = PendingNotification(
+                            key = o.getString("key"),
+                            filterId = o.getInt("filterId"),
+                            notification = Notification(
+                                title = n.optString("title"),
+                                content = n.optString("content"),
+                                origin = n.optString("origin"),
+                                timestamp = n.optLong("timestamp"),
+                            ),
+                            snoozedAt = o.getLong("snoozedAt"),
+                            committedUntil = o.getLong("committedUntil"),
+                            androidPresent = o.optBoolean("androidPresent", true),
+                        )
+                        put(pending.key, pending)
                     }
                 }
             }
@@ -41,7 +57,6 @@ object PendingNotificationRegistry {
     @Synchronized
     fun record(context: Context, sbn: StatusBarNotification, filterId: Int, snoozedAt: Long, committedUntil: Long) {
         initialize(context)
-        attributions = attributions + (sbn.key to Attribution(filterId, snoozedAt, committedUntil))
         _entries.value = _entries.value + (sbn.key to PendingNotification.from(sbn, filterId, snoozedAt, committedUntil))
         persist(context)
     }
@@ -49,21 +64,31 @@ object PendingNotificationRegistry {
     @Synchronized
     fun remove(context: Context, key: String) {
         initialize(context)
-        attributions = attributions - key
         _entries.value = _entries.value - key
         persist(context)
     }
 
-    /** Android is the source of truth. Rebuild visible entries from persisted NotiFlow attribution. */
+    @Synchronized
+    fun removeAll(context: Context, keys: Collection<String>) {
+        if (keys.isEmpty()) return
+        initialize(context)
+        _entries.value = _entries.value - keys.toSet()
+        persist(context)
+    }
+
+    /**
+     * Keep NotiFlow's pending record even if Android no longer reports the snooze. Originating apps
+     * can cancel or replace snoozed notifications, so absence from Android is only a state change.
+     */
     @Synchronized
     fun reconcile(context: Context, snoozed: Array<StatusBarNotification>) {
         initialize(context)
         val live = snoozed.associateBy { it.key }
-        val surviving = attributions.filterKeys { it in live }
-        attributions = surviving
-        _entries.value = surviving.mapNotNull { (key, a) ->
-            live[key]?.let { key to PendingNotification.from(it, a.filterId, a.snoozedAt, a.committedUntil) }
-        }.toMap()
+        _entries.value = _entries.value.mapValues { (key, pending) ->
+            live[key]?.let {
+                PendingNotification.from(it, pending.filterId, pending.snoozedAt, pending.committedUntil)
+            } ?: pending.copy(androidPresent = false)
+        }
         persist(context)
     }
 
@@ -73,8 +98,18 @@ object PendingNotificationRegistry {
 
     private fun persist(context: Context) {
         val array = JSONArray()
-        attributions.forEach { (key, a) -> array.put(JSONObject().apply {
-            put("key", key); put("filterId", a.filterId); put("snoozedAt", a.snoozedAt); put("committedUntil", a.committedUntil)
+        _entries.value.values.forEach { pending -> array.put(JSONObject().apply {
+            put("key", pending.key)
+            put("filterId", pending.filterId)
+            put("snoozedAt", pending.snoozedAt)
+            put("committedUntil", pending.committedUntil)
+            put("androidPresent", pending.androidPresent)
+            put("notification", JSONObject().apply {
+                put("title", pending.notification.title)
+                put("content", pending.notification.content)
+                put("origin", pending.notification.origin)
+                put("timestamp", pending.notification.timestamp)
+            })
         }) }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, array.toString()).apply()
     }
