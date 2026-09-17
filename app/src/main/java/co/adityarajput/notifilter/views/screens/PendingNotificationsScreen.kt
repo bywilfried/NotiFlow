@@ -41,6 +41,23 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val relevantFilters = filters.filter { f -> pending.values.any { it.filterId == f.id } }
     val shown = pending.values.filter { selectedFilterId == null || it.filterId == selectedFilterId }.sortedBy { it.committedUntil }
 
+    // A pending entry belongs to NotiFlow even if Android/the source app drops the snoozed SBN.
+    // Remove it only when the same forecast shown to the user says it is theoretically released.
+    LaunchedEffect(pending, filters) {
+        while (true) {
+            val now = System.currentTimeMillis()
+            val expired = pending.values.mapNotNull { item ->
+                val release = predictPendingRelease(item.notification, item.committedUntil, filters)
+                item.key.takeIf { release != null && release <= now }
+            }
+            if (expired.isNotEmpty()) {
+                PendingNotificationRegistry.removeAll(context.applicationContext, expired)
+                break
+            }
+            delay(1.seconds)
+        }
+    }
+
     LaunchedEffect(selectedFilterId) {
         if (selectedFilterId == ANDROID_SNOOZES) while (true) {
             androidSnoozes = if (NotificationListener.isServiceInitialized) runCatching {
@@ -80,7 +97,12 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     val n = item.notification
                     val release = predictPendingRelease(n, item.committedUntil, filters)
                     val releaseText = if (release == null) stringResource(R.string.pending_release_never) else DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(release))
-                    Tile(n.title, n.content, n.origin.getFirst(30), stringResource(R.string.pending_release_planned, releaseText), null, { toOpen = item }, null, {}, true)
+                    val status = if (item.androidPresent) {
+                        stringResource(R.string.pending_release_planned, releaseText)
+                    } else {
+                        stringResource(R.string.pending_release_planned_android_missing, releaseText)
+                    }
+                    Tile(n.title, n.content, n.origin.getFirst(30), status, null, { toOpen = item }, null, {}, true)
                 }
             }
         }
