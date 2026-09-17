@@ -32,7 +32,9 @@ import kotlin.time.Duration.Companion.seconds
 class NotificationListener : NotificationListenerService() {
     companion object {
         @Volatile private var _instance: NotificationListener? = null
-        var instance: NotificationListener get() = _instance ?: throw IllegalStateException("NotificationListener not initialized") private set(value) { _instance = value }
+        var instance: NotificationListener
+            get() = _instance ?: throw IllegalStateException("NotificationListener not initialized")
+            private set(value) { _instance = value }
         val isServiceInitialized get() = _instance != null
         const val NOTIFICATION_SOUND_DURATION = 3000L
         fun createAlertNotificationChannel() { if (instance.notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) instance.notificationManager.createNotificationChannel(NotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID, "NotiFilter Alert Service", NotificationManager.IMPORTANCE_HIGH).apply { description = "Required for ALERT Actions" }) }
