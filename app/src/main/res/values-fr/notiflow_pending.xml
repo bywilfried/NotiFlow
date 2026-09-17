@@ -5,6 +5,10 @@
     <string name="pending_notification_count">%1$d notifications en attente</string>
     <string name="pending_filter_by_filter">Filtrer par filtre</string>
     <string name="pending_all_filters">Tous les filtres</string>
+    <string name="pending_android_snoozes_dev">Toutes les snooze Android (fonction de dev)</string>
+    <string name="pending_no_android_snoozes">Android ne signale actuellement aucune notification snoozée</string>
+    <string name="pending_android_tracked">Suivie par NotiFlow</string>
+    <string name="pending_android_untracked">Non suivie par NotiFlow</string>
     <string name="pending_release_planned">Libération prévue : %1$s</string>
     <string name="pending_release_never">Jamais</string>
     <string name="pending_help_title">À propos des notifications en attente</string>
