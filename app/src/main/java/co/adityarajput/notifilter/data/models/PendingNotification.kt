@@ -10,6 +10,8 @@ data class PendingNotification(
     val snoozedAt: Long,
     /** Exact wake-up deadline already handed to Android for the current snooze cycle. */
     val committedUntil: Long,
+    /** Whether Android still exposes this notification through snoozedNotifications. */
+    val androidPresent: Boolean = true,
 ) {
     companion object {
         fun from(sbn: StatusBarNotification, filterId: Int, snoozedAt: Long, committedUntil: Long) =
@@ -19,6 +21,7 @@ data class PendingNotification(
                 notification = Notification(sbn),
                 snoozedAt = snoozedAt,
                 committedUntil = committedUntil,
+                androidPresent = true,
             )
     }
 }
