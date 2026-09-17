@@ -10,9 +10,10 @@
     <string name="pending_android_tracked">Suivie par NotiFlow</string>
     <string name="pending_android_untracked">Non suivie par NotiFlow</string>
     <string name="pending_release_planned">Libération prévue : %1$s</string>
+    <string name="pending_release_planned_android_missing">Libération prévue : %1$s · Introuvable dans les notifications snoozées d’Android</string>
     <string name="pending_release_never">Jamais</string>
     <string name="pending_help_title">À propos des notifications en attente</string>
-    <string name="pending_help_text">Cette liste affiche les notifications actuellement retenues par NotiFlow pour être délivrées plus tard. Une notification peut disparaître avant sa libération prévue si l’application d’origine l’annule ou la remplace, ou si son contenu est lu, supprimé, déplacé ou traité, y compris depuis un autre appareil. L’heure de libération est recalculée à partir des filtres actifs actuels, sans jamais revenir avant une échéance de snooze déjà confiée à Android.</string>
+    <string name="pending_help_text">Cette liste affiche les notifications retenues par NotiFlow pour être délivrées plus tard. Une fois qu’une notification a été snoozée par NotiFlow, elle reste dans cette liste jusqu’à son heure de libération théorique, même si Android ne la signale plus comme snoozée. Cela peut arriver si l’application d’origine l’annule ou la remplace, ou si son contenu est traité ailleurs. L’heure de libération est recalculée à partir des filtres actifs actuels, sans jamais revenir avant une échéance de snooze déjà confiée à Android. Une notification devenue introuvable pour Android reste conservée comme trace par NotiFlow ; Android peut ne plus être en mesure de la republier.</string>
     <string name="open_notification_title">Ouvrir cette notification ?</string>
     <string name="open_notification_warning">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité et annuler la notification. Pour une notification en attente, cela peut empêcher sa réapparition à l’heure prévue.</string>
     <string name="open_notification_warning_history">Vous allez ouvrir le contenu associé à cette notification. L’application concernée peut alors considérer ce contenu comme lu ou traité.</string>
