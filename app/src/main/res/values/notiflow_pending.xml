@@ -10,9 +10,10 @@
     <string name="pending_android_tracked">Tracked by NotiFlow</string>
     <string name="pending_android_untracked">Not tracked by NotiFlow</string>
     <string name="pending_release_planned">Planned release: %1$s</string>
+    <string name="pending_release_planned_android_missing">Planned release: %1$s · No longer found in Android snoozed notifications</string>
     <string name="pending_release_never">Never</string>
     <string name="pending_help_title">About pending notifications</string>
-    <string name="pending_help_text">This list shows notifications currently held for later delivery by NotiFlow. A notification may disappear before its planned release if the originating app cancels or replaces it, or if its content is read, deleted, moved or otherwise handled, including from another device. The planned release time is recalculated from the current enabled rules, while never moving before a snooze deadline already committed to Android.</string>
+    <string name="pending_help_text">This list shows notifications held for later delivery by NotiFlow. Once NotiFlow has snoozed a notification, it remains listed until its theoretical release time, even if Android no longer reports it as snoozed. This can happen when the originating app cancels or replaces it, or when its content is handled elsewhere. The planned release time is recalculated from the current enabled rules, while never moving before a snooze deadline already committed to Android. A notification no longer found by Android is kept as a NotiFlow record; Android may no longer be able to republish it.</string>
     <string name="open_notification_title">Open this notification?</string>
     <string name="open_notification_warning">Opening the content associated with this notification may cause the app or Android to consider it read or handled and cancel the notification. For a pending notification, this can prevent it from appearing again at its planned release time.</string>
     <string name="open_notification_warning_history">You are about to open the content associated with this notification. The originating app may then consider the content read or handled.</string>
