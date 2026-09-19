@@ -46,6 +46,7 @@ import java.time.format.DateTimeFormatter
 fun SettingsScreen(
     goToLicensesScreen: () -> Unit = {},
     goToAboutScreen: () -> Unit = {},
+    goToHelpScreen: () -> Unit = {},
     goBack: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -292,6 +293,18 @@ fun SettingsScreen(
                                 stringResource(R.string.copy_logs),
                                 fontWeight = FontWeight.Medium,
                             )
+                        }
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { goToHelpScreen() },
+                            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                        ) {
+                            Icon(painterResource(R.drawable.info), stringResource(R.string.help))
+                            Column {
+                                Text(stringResource(R.string.help), fontWeight = FontWeight.Medium)
+                                Text(stringResource(R.string.help_settings_description), style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                         Row(
                             Modifier
