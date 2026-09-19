@@ -10,8 +10,8 @@
     <string name="pending_android_tracked">Tracked by NotiFlow</string>
     <string name="pending_android_untracked">Not tracked by NotiFlow</string>
     <string name="pending_release_planned">Planned release: %1$s</string>
-    <string name="pending_android_status_present">Android status: still snoozed</string>
-    <string name="pending_android_status_missing">Android status: no longer snoozed</string>
+    <string name="pending_android_status_present">Status: still active</string>
+    <string name="pending_android_status_missing">Status: removed by Android</string>
     <string name="pending_release_planned_android_missing">Planned release: %1$s · No longer found in Android snoozed notifications</string>
     <string name="pending_release_never">Never</string>
     <string name="pending_help_title">About pending notifications</string>
