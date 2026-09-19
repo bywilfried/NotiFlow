@@ -29,12 +29,13 @@ fun Navigator(controller: NavHostController) {
         composable<UpsertFilterRoute> { UpsertFilterScreen(it.toRoute<UpsertFilterRoute>().filterString, controller::popBackStack) }
         composable(Routes.NOTIFICATIONS.name) { NotificationsScreen(controller::popBackStack) }
         composable<PendingNotificationsRoute> { PendingNotificationsScreen(it.toRoute<PendingNotificationsRoute>().filterId, controller::popBackStack) }
-        composable(Routes.SETTINGS.name) { SettingsScreen({ controller.navigate(Routes.LICENSES.name) }, { controller.navigate(Routes.ABOUT.name) }, controller::popBackStack) }
+        composable(Routes.SETTINGS.name) { SettingsScreen({ controller.navigate(Routes.LICENSES.name) }, { controller.navigate(Routes.ABOUT.name) }, { controller.navigate(Routes.HELP.name) }, controller::popBackStack) }
         composable(Routes.LICENSES.name) { LicensesScreen(controller::popBackStack) }
         composable(Routes.ABOUT.name) { AboutScreen(controller::popBackStack) }
+        composable(Routes.HELP.name) { HelpScreen(controller::popBackStack) }
     }
 }
 
-enum class Routes { ONBOARDING, FILTERS, NOTIFICATIONS, SETTINGS, LICENSES, ABOUT }
+enum class Routes { ONBOARDING, FILTERS, NOTIFICATIONS, SETTINGS, LICENSES, ABOUT, HELP }
 @Serializable data class UpsertFilterRoute(val filterString: String = "null")
 @Serializable data class PendingNotificationsRoute(val filterId: Int? = null)
