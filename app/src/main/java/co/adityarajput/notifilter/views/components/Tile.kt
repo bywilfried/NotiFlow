@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
@@ -28,6 +29,7 @@ fun Tile(
     dividerBetweenTitleAndContent: Boolean = false,
     prominentStatus: String? = null,
     onProminentStatusClick: (() -> Unit)? = null,
+    prominentStatusColor: Color? = null,
 ) {
     Card(Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_small)).animateContentSize(tween(300, easing = LinearOutSlowInEasing)).combinedClickable(onClick = onClick, onLongClick = onLongClick ?: onClick)) {
         Column(Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_large)), Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
@@ -39,7 +41,7 @@ fun Tile(
                 prominentStatus,
                 Modifier.then(if (onProminentStatusClick != null) Modifier.clickable(onClick = onProminentStatusClick) else Modifier),
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
+                color = prominentStatusColor ?: MaterialTheme.colorScheme.primary,
             )
             Text(title, style = MaterialTheme.typography.titleMedium)
             if (dividerBetweenTitleAndContent) HorizontalDivider()

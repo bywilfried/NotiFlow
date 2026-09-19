@@ -10,6 +10,8 @@
     <string name="pending_android_tracked">Suivie par NotiFlow</string>
     <string name="pending_android_untracked">Non suivie par NotiFlow</string>
     <string name="pending_release_planned">Libération prévue : %1$s</string>
+    <string name="pending_android_status_present">État Android : toujours snoozée</string>
+    <string name="pending_android_status_missing">État Android : disparue des snoozes</string>
     <string name="pending_release_planned_android_missing">Libération prévue : %1$s · Introuvable dans les notifications snoozées d’Android</string>
     <string name="pending_release_never">Jamais</string>
     <string name="pending_help_title">À propos des notifications en attente</string>

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.TextAlign
 import co.adityarajput.notifilter.R
@@ -96,12 +97,25 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     val n = item.notification
                     val release = predictPendingRelease(n, item.committedUntil, filters)
                     val releaseText = if (release == null) stringResource(R.string.pending_release_never) else DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(release))
-                    val status = if (item.androidPresent) {
-                        stringResource(R.string.pending_release_planned, releaseText)
+                    val androidStatus = if (item.androidPresent) {
+                        stringResource(R.string.pending_android_status_present)
                     } else {
-                        stringResource(R.string.pending_release_planned_android_missing, releaseText)
+                        stringResource(R.string.pending_android_status_missing)
                     }
-                    Tile(n.title, n.content, n.origin.getFirst(30), status, null, { toOpen = item }, null, {}, true)
+                    val androidStatusColor = if (item.androidPresent) Color(0xFF2E7D32) else Color(0xFFF57C00)
+                    Tile(
+                        n.title,
+                        n.content,
+                        n.origin.getFirst(30),
+                        stringResource(R.string.pending_release_planned, releaseText),
+                        null,
+                        { toOpen = item },
+                        null,
+                        {},
+                        true,
+                        prominentStatus = androidStatus,
+                        prominentStatusColor = androidStatusColor,
+                    )
                 }
             }
         }
