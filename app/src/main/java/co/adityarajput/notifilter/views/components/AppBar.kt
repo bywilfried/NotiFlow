@@ -4,11 +4,17 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.views.Theme
 
@@ -22,14 +28,22 @@ fun AppBar(
 ) {
     TopAppBar(
         {
+            val defaultFontSize = when {
+                canNavigateBack -> MaterialTheme.typography.headlineMedium.fontSize
+                else -> MaterialTheme.typography.headlineLarge.fontSize
+            }
+            var titleFontSize by remember(title, defaultFontSize) { mutableStateOf(defaultFontSize) }
             Text(
                 title,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontSize = when {
-                        canNavigateBack -> MaterialTheme.typography.headlineMedium.fontSize
-                        else -> MaterialTheme.typography.headlineLarge.fontSize
-                    },
-                ),
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                softWrap = false,
+                style = MaterialTheme.typography.headlineMedium.copy(fontSize = titleFontSize),
+                onTextLayout = { result ->
+                    if (result.didOverflowWidth && titleFontSize > 18.sp) {
+                        titleFontSize = (titleFontSize.value - 1f).coerceAtLeast(18f).sp
+                    }
+                },
             )
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
