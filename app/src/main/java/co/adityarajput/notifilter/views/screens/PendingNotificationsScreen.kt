@@ -41,23 +41,6 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val relevantFilters = filters.filter { f -> pending.values.any { it.filterId == f.id } }
     val shown = pending.values.filter { selectedFilterId == null || it.filterId == selectedFilterId }.sortedBy { it.committedUntil }
 
-    // A pending entry belongs to NotiFlow even if Android/the source app drops the snoozed SBN.
-    // Remove it only when the same forecast shown to the user says it is theoretically released.
-    LaunchedEffect(pending, filters) {
-        while (true) {
-            val now = System.currentTimeMillis()
-            val expired = pending.values.mapNotNull { item ->
-                val release = predictPendingRelease(item.notification, item.committedUntil, filters)
-                item.key.takeIf { release != null && release <= now }
-            }
-            if (expired.isNotEmpty()) {
-                PendingNotificationRegistry.removeAll(context.applicationContext, expired)
-                break
-            }
-            delay(1.seconds)
-        }
-    }
-
     LaunchedEffect(selectedFilterId) {
         if (selectedFilterId == ANDROID_SNOOZES) while (true) {
             androidSnoozes = if (NotificationListener.isServiceInitialized) runCatching {
