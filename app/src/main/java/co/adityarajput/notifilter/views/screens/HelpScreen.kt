@@ -1,14 +1,16 @@
 package co.adityarajput.notifilter.views.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.views.components.AppBar
@@ -39,11 +41,36 @@ fun HelpScreen(goBack: () -> Unit) {
         ) {
             Text(stringResource(R.string.help_intro), Modifier.padding(dimensionResource(R.dimen.padding_large)), style = MaterialTheme.typography.bodyLarge)
             helpSections.forEach { section ->
+                var expanded by rememberSaveable(section.title) { mutableStateOf(false) }
                 Card(Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_small))) {
-                    Column(Modifier.padding(dimensionResource(R.dimen.padding_large))) {
-                        Text(stringResource(section.title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
-                        Text(stringResource(section.body), style = MaterialTheme.typography.bodyMedium)
+                    Column {
+                        Row(
+                            Modifier.fillMaxWidth().clickable { expanded = !expanded }
+                                .padding(dimensionResource(R.dimen.padding_large)),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                stringResource(section.title),
+                                Modifier.weight(1f),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                if (expanded) "−" else "+",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                        if (expanded) {
+                            Text(
+                                stringResource(section.body),
+                                Modifier.padding(
+                                    start = dimensionResource(R.dimen.padding_large),
+                                    end = dimensionResource(R.dimen.padding_large),
+                                    bottom = dimensionResource(R.dimen.padding_large),
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                     }
                 }
             }
