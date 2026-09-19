@@ -207,4 +207,35 @@
     <!-- region system -->
     <string name="foreground_notification_content">NotiFilter is running</string>
     <!-- endregion -->
+    <!-- region HelpScreen -->
+    <string name="help">Help</string>
+    <string name="help_settings_description">NotiFlow user guide</string>
+    <string name="help_intro">NotiFlow lets you decide which notifications are affected, what happens to them, and when a rule is active. This guide describes NotiFlow’s current behavior.</string>
+    <string name="help_getting_started_title">Getting started</string>
+    <string name="help_getting_started_body">NotiFlow needs Android notification access to observe notifications and apply filters. Create a filter with +, choose the app (or all apps), define what must match, choose an action, then configure its schedule. Some actions request additional Android permissions only when needed.</string>
+    <string name="help_matching_title">Matching notifications</string>
+    <string name="help_matching_body">There are three matching modes. “All notifications” matches every notification from the selected app. “Search in the notification” can inspect title, content, sub-text, expanded text, summary, text lines, conversation title and notification channel. Each selected field can use its own regular expression. Optional fields use OR logic; every field marked Required must match, and if optional fields also exist at least one of them must match. “All fields” searches the same pattern across every supported field. “Advanced expression” is intended for complex logical conditions.</string>
+    <string name="help_regex_title">Search terms and regular expressions</string>
+    <string name="help_regex_body">Search patterns are regular expressions. Plain text such as hello matches that text. Matching is case-sensitive unless the expression changes it: (?i)hello ignores case, ^hello matches the beginning, hello$ the end, and hello|hi matches either value. Invalid expressions cannot be saved.</string>
+    <string name="help_actions_title">Actions</string>
+    <string name="help_actions_body">Dismiss removes a matching notification. Tap notification opens it automatically; Tap a button activates a matching notification action. Batch groups notifications over a chosen period. Delay snoozes them either while the filter is active or for a fixed duration. Debounce mutes rapid repeated notifications. Mute suppresses the notification sound. Alert plays an alert. Disable Do Not Disturb temporarily changes DND. Remove stale notifications dismisses them after a delay. Replace dismisses the original and posts a custom notification using templates.</string>
+    <string name="help_schedule_title">Schedules and time ranges</string>
+    <string name="help_schedule_body">A filter can contain several independent time ranges and days. The filter acts only while one of its ranges is active. With Delay “while filter is active”, NotiFlow snoozes a notification until the expected end of the blocking period. Consecutive or overlapping ranges can extend that theoretical release time.</string>
+    <string name="help_pending_title">Pending notifications</string>
+    <string name="help_pending_body">The Pending notifications screen shows notifications delayed or batched by NotiFlow, globally or by filter. “Planned release” is NotiFlow’s theoretical release time. “Status: still active” means Android currently reports the snoozed notification; “Status: removed by Android” means Android no longer reports it. While this screen is open, that status is refreshed about every two seconds. A removed entry is kept until its theoretical release time. The developer view shows Android’s raw snooze list.</string>
+    <string name="help_android_limits_title">Why can a snoozed notification disappear?</string>
+    <string name="help_android_limits_body">The originating app and Android still control the underlying notification. An app may cancel, replace or update it, for example after a message is read or handled elsewhere. NotiFlow cannot force Android to keep a snoozed notification that its owner has removed. This is why the pending list distinguishes Android presence from NotiFlow’s retained record.</string>
+    <string name="help_history_title">History and counters</string>
+    <string name="help_history_body">History records notifications handled by filters whose history option is enabled. New history entries keep the identifier of the filter that actually handled them, so History can be filtered by filter. Older entries created before this information was stored remain available under All filters but cannot always be attributed reliably. Filter hit counters are cumulative and separate from the history list.</string>
+    <string name="help_priority_title">Filter priority</string>
+    <string name="help_priority_body">When several enabled filters could handle the same notification, priority determines which matching filter is applied. You can reorder filters from the main screen. Pay particular attention to priority when rules overlap.</string>
+    <string name="help_display_title">History, widget and opening entries</string>
+    <string name="help_display_body">A filter can save intercepted notifications to the in-app History and/or the home-screen log widget. When the tappable option is enabled, opening a stored notification may launch its original action when that action is still available. NotiFlow asks for confirmation before opening entries from History or Pending notifications.</string>
+    <string name="help_permissions_title">Permissions and reliability</string>
+    <string name="help_permissions_body">Notification access is essential. Accessibility is used for actions that tap notifications or their buttons. Posting notifications is needed by alert/replacement features where Android requires it, notification-policy access is used for Do Not Disturb, and battery-optimization exemptions can improve delayed actions. “Run in foreground” can help on devices that aggressively stop background services.</string>
+    <string name="help_examples_title">Practical examples</string>
+    <string name="help_examples_body">To postpone work mail overnight: select the mail app, match all notifications or the fields you need, choose Delay while active, and add your evening/night ranges. To target one account or conversation: use fields exposed by that app, including channel or conversation title, and build a field-specific match. To silence bursts without hiding notifications: use Debounce or Mute rather than Dismiss.</string>
+    <string name="help_privacy_title">Privacy</string>
+    <string name="help_privacy_body">Filtering is performed locally on the device. Because notification access can expose sensitive notification text, only grant it to apps you trust. NotiFlow’s filter configuration, pending records and history are stored locally by the app.</string>
+    <!-- endregion -->
 </resources>
