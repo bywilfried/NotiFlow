@@ -28,6 +28,9 @@ data class Notification(
     @ColumnInfo(defaultValue = "0")
     val showInWidget: Boolean = false,
 
+    @ColumnInfo(defaultValue = "-1")
+    val filterId: Int = -1,
+
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 ) {
@@ -93,7 +96,7 @@ data class Notification(
     ) : this(
         sbn.notification.extras.getString(AndroidNotification.EXTRA_TITLE) ?: "",
         sbn.notification.extras.getCharSequence(AndroidNotification.EXTRA_TEXT)?.toString() ?: "",
-        sbn.packageName, sbn.postTime, showInHistory, showInWidget, id,
+        sbn.packageName, sbn.postTime, showInHistory, showInWidget, -1, id,
     ) {
         val extras = sbn.notification.extras
         subText = extras.getCharSequence(AndroidNotification.EXTRA_SUB_TEXT)?.toString() ?: ""

@@ -14,7 +14,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.Cache
-import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.*
 import co.adityarajput.notifilter.viewmodels.*
@@ -30,7 +29,7 @@ fun NotificationsScreen(goBack: () -> Unit, viewModel: NotificationsViewModel = 
     var filterMenu by remember { mutableStateOf(false) }
     var toOpen by remember { mutableStateOf<Notification?>(null) }
     val history = state.value.notifications
-    val shown = history?.filter { n -> selectedFilterId == null || filters.firstOrNull { it.id == selectedFilterId }?.let { f -> (f.app == Any || f.app.packageName == n.origin) && f.matchesTextOf(n) } == true }
+    val shown = history?.filter { n -> selectedFilterId == null || n.filterId == selectedFilterId }
 
     Scaffold(topBar = { AppBar(stringResource(R.string.history), true, goBack) { IconButton({ viewModel.dialogState = NotificationDialogState.CLEAR_HISTORY }) { Icon(painterResource(R.drawable.clear_all), stringResource(R.string.clear_history), tint = MaterialTheme.colorScheme.onSurface) } } }) { paddingValues ->
         Column(Modifier.padding(paddingValues).fillMaxSize()) {
