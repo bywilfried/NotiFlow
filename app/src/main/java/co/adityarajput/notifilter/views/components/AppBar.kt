@@ -1,11 +1,14 @@
 package co.adityarajput.notifilter.views.components
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.views.Theme
 
@@ -40,6 +43,13 @@ fun AppBar(
                         stringResource(R.string.alttext_back_button),
                     )
                 }
+            } else {
+                Icon(
+                    painterResource(R.drawable.notiflow_icon_main),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = androidx.compose.ui.graphics.Color.Unspecified,
+                )
             }
         },
         actions = actions,
