@@ -42,6 +42,23 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val relevantFilters = filters.filter { f -> pending.values.any { it.filterId == f.id } }
     val shown = pending.values.filter { selectedFilterId == null || it.filterId == selectedFilterId }.sortedBy { it.committedUntil }
 
+    // Keep the active/removed status synchronized with Android while this screen is open.
+    LaunchedEffect(Unit) {
+        while (true) {
+            if (NotificationListener.isServiceInitialized) {
+                runCatching {
+                    PendingNotificationRegistry.reconcile(
+                        context.applicationContext,
+                        NotificationListener.instance.snoozedNotifications,
+                    )
+                }.onFailure {
+                    Logger.e("PendingNotificationsScreen", "Failed to refresh Android snooze status", it)
+                }
+            }
+            delay(2.seconds)
+        }
+    }
+
     // Keep a lost Android snooze visible until the theoretical release time.
     // At that point it no longer belongs in the pending list.
     LaunchedEffect(pending, filters) {
