@@ -16,7 +16,7 @@ import co.adityarajput.notifilter.data.models.Notification
         AutoMigration(4, 5), AutoMigration(5, 6),
         AutoMigration(6, 7, NotiFilterDatabase.DeleteTableAN::class),
         AutoMigration(7, 8), AutoMigration(8, 9), AutoMigration(10, 11),
-        AutoMigration(11, 12), AutoMigration(13, 14),
+        AutoMigration(11, 12),
     ],
 )
 @TypeConverters(Converters::class)
@@ -175,10 +175,16 @@ abstract class NotiFilterDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notifications ADD COLUMN filterId INTEGER NOT NULL DEFAULT -1")
+            }
+        }
+
         fun getDatabase(context: Context): NotiFilterDatabase {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(context, NotiFilterDatabase::class.java, "notifilter_database")
-                    .addMigrations(MIGRATION_9_10, MIGRATION_12_13)
+                    .addMigrations(MIGRATION_9_10, MIGRATION_12_13, MIGRATION_13_14)
                     .build().also { instance = it }
             }
         }
