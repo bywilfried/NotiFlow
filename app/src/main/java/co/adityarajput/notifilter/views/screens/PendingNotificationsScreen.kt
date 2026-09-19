@@ -41,6 +41,22 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val relevantFilters = filters.filter { f -> pending.values.any { it.filterId == f.id } }
     val shown = pending.values.filter { selectedFilterId == null || it.filterId == selectedFilterId }.sortedBy { it.committedUntil }
 
+    // Keep a lost Android snooze visible until the theoretical release time.
+    // At that point it no longer belongs in the pending list.
+    LaunchedEffect(pending, filters) {
+        while (true) {
+            val now = System.currentTimeMillis()
+            val expired = pending.values.mapNotNull { item ->
+                val release = predictPendingRelease(item.notification, item.committedUntil, filters)
+                item.key.takeIf { release != null && release <= now }
+            }
+            if (expired.isNotEmpty()) {
+                PendingNotificationRegistry.removeAll(context.applicationContext, expired)
+            }
+            delay(1.seconds)
+        }
+    }
+
     LaunchedEffect(selectedFilterId) {
         if (selectedFilterId == ANDROID_SNOOZES) while (true) {
             androidSnoozes = if (NotificationListener.isServiceInitialized) runCatching {
