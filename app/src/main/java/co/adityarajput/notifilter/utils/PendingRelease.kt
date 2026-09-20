@@ -30,7 +30,15 @@ fun predictPendingRelease(
             .filter { it.enabled && it.action.hasMeaningfulPendingNotifications }
             .filter { it.app == Any || it.app.packageName == notification.origin }
             .filter { it.matchesTextOf(notification) }
-            .filter { it.schedule.includes(cursor) }
+            // A release cursor sits exactly on a schedule boundary. Treat a range that
+            // starts at that minute as contiguous with the snooze that just ended
+            // (notably Sunday 24:00 -> Monday 00:00).
+            .filter { filter ->
+                filter.schedule.includes(cursor) ||
+                    filter.schedule.ranges[cursor.dayOfWeek.value % 7 + 1]
+                        .orEmpty()
+                        .any { it.start == cursor.hour * 60 + cursor.minute }
+            }
             .minByOrNull { it.priority }
             ?: return maxOf(minimum, cursor.toInstant().toEpochMilli())
 
