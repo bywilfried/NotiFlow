@@ -42,6 +42,41 @@ class NotificationListener : NotificationListenerService() {
         private val _removalDiagnostics = MutableStateFlow<List<RemovalDiagnostic>>(emptyList())
         val removalDiagnostics = _removalDiagnostics.asStateFlow()
         fun clearRemovalDiagnostics() { _removalDiagnostics.value = emptyList() }
+
+        data class SnoozedSnapshotDiagnostic(
+            val key: String,
+            val packageName: String,
+            val title: String,
+            val changedFields: List<String>,
+        )
+        private var snoozedSnapshotBaseline: Map<String, Map<String, String>> = emptyMap()
+        private val _snoozedSnapshotDiagnostics = MutableStateFlow<List<SnoozedSnapshotDiagnostic>>(emptyList())
+        val snoozedSnapshotDiagnostics = _snoozedSnapshotDiagnostics.asStateFlow()
+
+        fun captureSnoozedSnapshotBaseline() {
+            if (!isServiceInitialized) return
+            snoozedSnapshotBaseline = instance.snoozedNotifications.associate { it.key to instance.snapshotFields(it) }
+            _snoozedSnapshotDiagnostics.value = emptyList()
+        }
+
+        fun refreshSnoozedSnapshotDiagnostics() {
+            if (!isServiceInitialized || snoozedSnapshotBaseline.isEmpty()) return
+            val current = instance.snoozedNotifications.associateBy { it.key }
+            _snoozedSnapshotDiagnostics.value = snoozedSnapshotBaseline.mapNotNull { (key, before) ->
+                val sbn = current[key] ?: return@mapNotNull SnoozedSnapshotDiagnostic(
+                    key, before["package"].orEmpty(), before["title"].orEmpty(), listOf("snoozedNotifications: PRESENT -> ABSENT")
+                )
+                val after = instance.snapshotFields(sbn)
+                val changes = (before.keys + after.keys).distinct().mapNotNull { field ->
+                    val old = before[field]
+                    val new = after[field]
+                    if (old == new) null else "$field: $old -> $new"
+                }
+                if (changes.isEmpty()) null else SnoozedSnapshotDiagnostic(
+                    key, sbn.packageName, after["title"].orEmpty(), changes
+                )
+            }
+        }
         const val NOTIFICATION_SOUND_DURATION = 3000L
         fun createAlertNotificationChannel() { if (instance.notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) instance.notificationManager.createNotificationChannel(NotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID, "NotiFilter Alert Service", NotificationManager.IMPORTANCE_HIGH).apply { description = "Required for ALERT Actions" }) }
         fun createReplaceNotificationChannel(filterId: Int, openSettings: Boolean = false) { val channelId = Constants.getReplaceNotificationChannelId(filterId); if (instance.notificationManager.getNotificationChannel(channelId) == null) instance.notificationManager.createNotificationChannel(NotificationChannel(channelId, "NotiFilter Replace Notifications for Filter #$filterId", NotificationManager.IMPORTANCE_HIGH).apply { description = "Required for REPLACE Actions" }); if (openSettings) instance.startActivity(Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, instance.packageName).putExtra(Settings.EXTRA_CHANNEL_ID, channelId).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
@@ -83,6 +118,52 @@ class NotificationListener : NotificationListenerService() {
                 "pending notification removed: key=$key package=${sbn.packageName} title=$title reason=$reason ($reasonName)"
             )
         }
+    }
+
+    private fun snapshotFields(sbn: StatusBarNotification): Map<String, String> {
+        val n = sbn.notification
+        val extras = n.extras
+        fun pendingIntentSummary(pi: android.app.PendingIntent?): String =
+            if (pi == null) "null" else runCatching {
+                "creatorPackage=${pi.creatorPackage},creatorUid=${pi.creatorUid},immutable=${if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) pi.isImmutable else "n/a"}"
+            }.getOrElse { "error:${it.javaClass.simpleName}" }
+        val extraValues = extras.keySet().sorted().joinToString("|") { key ->
+            val value = runCatching { extras.get(key) }.getOrNull()
+            "$key=${when (value) {
+                is Array<*> -> value.contentDeepToString()
+                is IntArray -> value.contentToString()
+                is LongArray -> value.contentToString()
+                is BooleanArray -> value.contentToString()
+                is CharArray -> value.contentToString()
+                else -> value?.toString()
+            }}"
+        }
+        val actions = n.actions?.mapIndexed { index, action ->
+            "$index:${action.title}:${pendingIntentSummary(action.actionIntent)}"
+        }?.joinToString("|").orEmpty()
+        return linkedMapOf(
+            "package" to sbn.packageName,
+            "title" to extras.getCharSequence(android.app.Notification.EXTRA_TITLE)?.toString().orEmpty(),
+            "text" to extras.getCharSequence(android.app.Notification.EXTRA_TEXT)?.toString().orEmpty(),
+            "id" to sbn.id.toString(),
+            "tag" to sbn.tag.orEmpty(),
+            "postTime" to sbn.postTime.toString(),
+            "notification.when" to n.`when`.toString(),
+            "flags" to n.flags.toString(),
+            "group" to n.group.orEmpty(),
+            "overrideGroupKey" to sbn.overrideGroupKey.orEmpty(),
+            "isGroup" to sbn.isGroup.toString(),
+            "isClearable" to sbn.isClearable.toString(),
+            "isOngoing" to sbn.isOngoing.toString(),
+            "channelId" to (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) n.channelId else "").orEmpty(),
+            "category" to n.category.orEmpty(),
+            "shortcutId" to (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) n.shortcutId else "").orEmpty(),
+            "contentIntent" to pendingIntentSummary(n.contentIntent),
+            "deleteIntent" to pendingIntentSummary(n.deleteIntent),
+            "fullScreenIntent" to pendingIntentSummary(n.fullScreenIntent),
+            "actions" to actions,
+            "extras" to extraValues,
+        )
     }
 
     private fun removalReasonName(reason: Int): String = when (reason) {
