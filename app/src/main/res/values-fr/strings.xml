@@ -222,4 +222,9 @@
     <string name="help_examples_body">Pour reporter les e-mails professionnels pendant la nuit : choisissez l’application de messagerie, ciblez toutes ses notifications ou les champs utiles, choisissez Retarder tant que le filtre est actif puis ajoutez vos plages du soir et de la nuit. Pour cibler un compte ou une conversation : utilisez les champs exposés par l’application, notamment le canal ou le titre de conversation, et créez une recherche par champ. Pour calmer des rafales sans masquer les notifications : utilisez Temporiser ou Mettre en sourdine plutôt que Rejeter.</string>
     <string name="help_privacy_title">Confidentialité</string>
     <string name="help_privacy_body">Le filtrage est effectué localement sur l’appareil. L’accès aux notifications pouvant exposer des textes sensibles, accordez-le uniquement aux applications auxquelles vous faites confiance. La configuration des filtres, les traces d’attente et l’historique de NotiFlow sont stockés localement par l’application.</string>
+    <string name="pending_snapshot_diagnostics_dev">Comparaison snapshot snooze (fonction de dev)</string>
+    <string name="pending_snapshot_diagnostics_help">Capturez une référence pendant que les notifications sont snoozées, puis lisez ou supprimez leur contenu dans l’application source. Cette vue vérifie toutes les 2 secondes et affiche uniquement les champs publics du StatusBarNotification qui ont changé. Aucun PendingIntent n’est exécuté.</string>
+    <string name="pending_snapshot_capture">Capturer la référence maintenant</string>
+    <string name="pending_snapshot_no_changes">Aucune différence détectée depuis la dernière référence.</string>
+    <string name="pending_snapshot_changed_fields">%1$d champ(s) modifié(s)</string>
 </resources>
