@@ -49,13 +49,28 @@ fun FiltersScreen(
             isListenerServiceInitialized = NotificationListener.isServiceInitialized
             delay(1.seconds)
         }
-        runCatching {
-            PendingNotificationRegistry.reconcile(
-                context.applicationContext,
-                NotificationListener.instance.snoozedNotifications,
-            )
-        }.onFailure {
-            Logger.e("FiltersScreen", "Failed to refresh pending notifications", it)
+        while (true) {
+            runCatching {
+                PendingNotificationRegistry.reconcile(
+                    context.applicationContext,
+                    NotificationListener.instance.snoozedNotifications,
+                )
+                val filters = state.value.filters.orEmpty()
+                val now = System.currentTimeMillis()
+                val expired = PendingNotificationRegistry.all().mapNotNull { item ->
+                    val release = predictPendingRelease(
+                        item.notification,
+                        item.committedUntil,
+                        filters,
+                        item.filterId,
+                    )
+                    item.key.takeIf { release != null && release <= now }
+                }
+                PendingNotificationRegistry.removeAll(context.applicationContext, expired)
+            }.onFailure {
+                Logger.e("FiltersScreen", "Failed to refresh pending notifications", it)
+            }
+            delay(2.seconds)
         }
     }
 
