@@ -64,6 +64,45 @@ class NotificationListener : NotificationListenerService() {
     private fun removePending(key: String) = PendingNotificationRegistry.remove(this, key)
     private fun snoozePending(sbn: StatusBarNotification, filter: Filter, duration: Long) { val now = System.currentTimeMillis(); PendingNotificationRegistry.record(this, sbn, filter.id, now, now + duration); snoozeNotification(sbn.key, duration); serviceScope.launch { delay(1500.milliseconds); reconcilePendingNotifications() } }
 
+    override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) {
+        super.onNotificationRemoved(sbn, rankingMap, reason)
+        val key = sbn?.key ?: return
+        val pending = PendingNotificationRegistry.entries.value[key]
+        if (pending != null) {
+            Logger.i(
+                "PendingRemovalDiagnostic",
+                "pending notification removed: key=$key package=${sbn.packageName} title=${sbn.notification.extras.getCharSequence(android.app.Notification.EXTRA_TITLE)} reason=$reason (${removalReasonName(reason)})"
+            )
+        }
+    }
+
+    private fun removalReasonName(reason: Int): String = when (reason) {
+        REASON_CLICK -> "CLICK"
+        REASON_CANCEL -> "CANCEL"
+        REASON_CANCEL_ALL -> "CANCEL_ALL"
+        REASON_ERROR -> "ERROR"
+        REASON_PACKAGE_CHANGED -> "PACKAGE_CHANGED"
+        REASON_USER_STOPPED -> "USER_STOPPED"
+        REASON_PACKAGE_BANNED -> "PACKAGE_BANNED"
+        REASON_APP_CANCEL -> "APP_CANCEL"
+        REASON_APP_CANCEL_ALL -> "APP_CANCEL_ALL"
+        REASON_LISTENER_CANCEL -> "LISTENER_CANCEL"
+        REASON_LISTENER_CANCEL_ALL -> "LISTENER_CANCEL_ALL"
+        REASON_GROUP_SUMMARY_CANCELED -> "GROUP_SUMMARY_CANCELED"
+        REASON_GROUP_OPTIMIZATION -> "GROUP_OPTIMIZATION"
+        REASON_PACKAGE_SUSPENDED -> "PACKAGE_SUSPENDED"
+        REASON_PROFILE_TURNED_OFF -> "PROFILE_TURNED_OFF"
+        REASON_UNAUTOBUNDLED -> "UNAUTOBUNDLED"
+        REASON_CHANNEL_BANNED -> "CHANNEL_BANNED"
+        REASON_SNOOZED -> "SNOOZED"
+        REASON_TIMEOUT -> "TIMEOUT"
+        REASON_CHANNEL_REMOVED -> "CHANNEL_REMOVED"
+        REASON_CLEAR_DATA -> "CLEAR_DATA"
+        REASON_ASSISTANT_CANCEL -> "ASSISTANT_CANCEL"
+        REASON_LOCKDOWN -> "LOCKDOWN"
+        else -> "UNKNOWN"
+    }
+
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         if (sbn.notification.flags and FLAG_GROUP_SUMMARY != 0) return
         val wasPending = PendingNotificationRegistry.entries.value.containsKey(sbn.key); val notification = Notification(sbn); val intents = Intents(sbn)
