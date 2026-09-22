@@ -41,6 +41,19 @@ object PendingNotificationRegistry {
                                 content = n.optString("content"),
                                 origin = n.optString("origin"),
                                 timestamp = n.optLong("timestamp"),
+                            ).restoreMatchingData(
+                                subText = n.optString("subText"),
+                                bigText = n.optString("bigText"),
+                                summaryText = n.optString("summaryText"),
+                                textLines = n.optString("textLines"),
+                                conversationTitle = n.optString("conversationTitle"),
+                                channel = n.optString("channel"),
+                                channelName = n.optString("channelName"),
+                                contextualData = n.optString("contextualData"),
+                                tag = n.optString("tag"),
+                                group = n.optString("group"),
+                                category = n.optString("category"),
+                                shortcut = n.optString("shortcut"),
                             ),
                             snoozedAt = o.getLong("snoozedAt"),
                             committedUntil = o.getLong("committedUntil"),
@@ -109,6 +122,18 @@ object PendingNotificationRegistry {
                 put("content", pending.notification.content)
                 put("origin", pending.notification.origin)
                 put("timestamp", pending.notification.timestamp)
+                put("subText", pending.notification.subText)
+                put("bigText", pending.notification.bigText)
+                put("summaryText", pending.notification.summaryText)
+                put("textLines", pending.notification.textLines)
+                put("conversationTitle", pending.notification.conversationTitle)
+                put("channel", pending.notification.channel)
+                put("channelName", pending.notification.channelName)
+                put("contextualData", pending.notification.contextualData)
+                put("tag", pending.notification.tag)
+                put("group", pending.notification.group)
+                put("category", pending.notification.category)
+                put("shortcut", pending.notification.shortcut)
             })
         }) }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, array.toString()).apply()
