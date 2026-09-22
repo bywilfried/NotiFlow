@@ -46,10 +46,21 @@ class NotificationListener : NotificationListenerService() {
     private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }; private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }; private val alarmManager by lazy { getSystemService(ALARM_SERVICE) as AlarmManager }
     @Volatile private var filters: List<Filter> = emptyList(); @Volatile private var notifications: List<Notification> = emptyList(); @Volatile private var cooldowns: Map<Int, Long> = emptyMap()
 
-    override fun onCreate() { super.onCreate(); instance = this; PendingNotificationRegistry.initialize(this); Logger.i("NotificationListener", "Service created"); if (sharedPreferences.getBoolean(Constants.RUN_IN_FOREGROUND, false)) startForeground(); serviceScope.launch { repository.filters().collectLatest { filters = it } }; serviceScope.launch { notifications = repository.notifications().first() } }
+    override fun onCreate() { super.onCreate(); instance = this; PendingNotificationRegistry.initialize(this); Logger.i("NotificationListener", "Service created"); if (sharedPreferences.getBoolean(Constants.RUN_IN_FOREGROUND, false)) startForeground(); serviceScope.launch { repository.filters().collectLatest { filters = it } }; serviceScope.launch { notifications = repository.notifications().first() }; serviceScope.launch { while (isActive) { refreshPendingNotifications(); delay(2.seconds) } } }
     fun startForeground() { notificationManager.createNotificationChannel(NotificationChannel(Constants.FOREGROUND_NOTIFICATION_CHANNEL_ID, "NotiFilter Foreground Service", NotificationManager.IMPORTANCE_LOW).apply { enableLights(false); enableVibration(false); setShowBadge(false); setSound(null, null) }); startForeground(Constants.FOREGROUND_NOTIFICATION_ID, NotificationCompat.Builder(this, Constants.FOREGROUND_NOTIFICATION_CHANNEL_ID).setContentTitle(getString(R.string.app_name_launcher)).setContentText(getString(R.string.foreground_notification_content)).setSmallIcon(R.drawable.ic_launcher_foreground).setOngoing(true).setSilent(true).build()) }
     override fun onListenerConnected() { super.onListenerConnected(); requestListenerHints(0); serviceScope.launch { delay(500.milliseconds); reconcilePendingNotifications() } }
     private fun reconcilePendingNotifications() { runCatching { PendingNotificationRegistry.reconcile(this, snoozedNotifications) }.onFailure { Logger.e("NotificationListener", "Failed to reconcile pending notifications", it) } }
+    private fun refreshPendingNotifications() {
+        runCatching {
+            PendingNotificationRegistry.reconcile(this, snoozedNotifications)
+            val now = System.currentTimeMillis()
+            val expired = PendingNotificationRegistry.all().mapNotNull { item ->
+                val release = predictPendingRelease(item.notification, item.committedUntil, filters, item.filterId)
+                item.key.takeIf { release != null && release <= now }
+            }
+            PendingNotificationRegistry.removeAll(this, expired)
+        }.onFailure { Logger.e("NotificationListener", "Failed to refresh pending notifications", it) }
+    }
     private fun removePending(key: String) = PendingNotificationRegistry.remove(this, key)
     private fun snoozePending(sbn: StatusBarNotification, filter: Filter, duration: Long) { val now = System.currentTimeMillis(); PendingNotificationRegistry.record(this, sbn, filter.id, now, now + duration); snoozeNotification(sbn.key, duration); serviceScope.launch { delay(1500.milliseconds); reconcilePendingNotifications() } }
 
