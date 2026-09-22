@@ -186,5 +186,6 @@ sealed class Action {
         private val DISMISS_STALE_REGEX = Regex("^DISMISS_STALE\\(retentionLength=(\\d+)\\)$")
         private val REPLACE_REGEX =
             Regex("^REPLACE\\(titleTemplate=(.*?), contentTemplate=(.*)\\)$")
+        private val READ_REGEX = Regex("^READ\\\\(speechTemplate=(.*)\\\\)$")
     }
 }
