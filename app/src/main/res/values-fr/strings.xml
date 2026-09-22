@@ -19,6 +19,7 @@
     <string name="disturb_short">désactiver Ne pas déranger pendant %1$s</string>
     <string name="dismiss_stale_short">rejeter après %1$s</string>
     <string name="replace_short">remplacer par %1$s | %2$s</string>
+    <string name="read_short">lire à voix haute « %1$s »</string>
     <string name="any_app">Toutes les applications</string>
     <string name="history_disabled">historique désactivé</string>
     <string name="filter_disabled">filtre désactivé</string>
@@ -133,6 +134,12 @@
     <string name="content_template">Modèle de contenu</string>
     <string name="notification_template_advice"><![CDATA[Utilisez ${app}, ${title} et ${content} comme variables pour accéder aux données de la notification d’origine. Cliquez <a href="https://github.com/BURG3R5/NotiFilter/wiki/Notification-Data">ici↗</a> pour découvrir d’autres modèles.]]></string>
     <string name="replace_notifications_description">NotiFilter rejette la notification d’origine et en envoie une nouvelle avec les valeurs choisies.</string>
+    <string name="read_long">Lire le contenu à voix haute</string>
+    <string name="speech_template">Modèle de texte à prononcer</string>
+    <string name="test_tts">Tester la synthèse vocale</string>
+    <string name="test_tts_sentence">Bonjour, ceci est un test de synthèse vocale.</string>
+    <string name="tts_not_available">Les ressources de synthèse vocale ne sont pas disponibles pour la langue actuelle.</string>
+    <string name="tts_not_initialized">La synthèse vocale n’a pas pu être initialisée. Réessayez plus tard.</string>
     <string name="display_options">Choisissez où afficher la notification interceptée</string>
     <string name="describe_history_screen">Écran Historique de l’application</string>
     <string name="describe_widget">Widget de journal sur l’écran d’accueil</string>
