@@ -15,6 +15,7 @@ fun predictPendingRelease(
     notification: Notification,
     committedUntil: Long,
     filters: List<Filter>,
+    originalFilterId: Int? = null,
 ): Long? {
     val zone = ZoneId.systemDefault()
     var cursor = Instant.ofEpochMilli(committedUntil).atZone(zone).withSecond(0).withNano(0)
@@ -29,7 +30,7 @@ fun predictPendingRelease(
             .asSequence()
             .filter { it.enabled && it.action.hasMeaningfulPendingNotifications }
             .filter { it.app == Any || it.app.packageName == notification.origin }
-            .filter { it.matchesTextOf(notification) }
+            .filter { it.id == originalFilterId || it.matchesTextOf(notification) }
             .filter { it.schedule.includes(cursor) }
             .minByOrNull { it.priority }
             ?: return maxOf(minimum, cursor.toInstant().toEpochMilli())
