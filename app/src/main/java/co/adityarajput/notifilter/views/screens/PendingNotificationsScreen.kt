@@ -26,6 +26,7 @@ import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 
 private const val ANDROID_SNOOZES = -1
+private const val REMOVAL_DIAGNOSTICS = -2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +35,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val repository = remember { AppContainer(context.applicationContext).repository }
     val filters by repository.filters().collectAsState(initial = emptyList())
     val pending by PendingNotificationRegistry.entries.collectAsState()
+    val removalDiagnostics by NotificationListener.removalDiagnostics.collectAsState()
     var selectedFilterId by remember(filterId) { mutableStateOf(filterId) }
     var androidSnoozes by remember { mutableStateOf<List<Pair<String, Notification>>>(emptyList()) }
     var filterMenu by remember { mutableStateOf(false) }
@@ -90,6 +92,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                 val selectedName = when (selectedFilterId) {
                     null -> stringResource(R.string.pending_all_filters)
                     ANDROID_SNOOZES -> stringResource(R.string.pending_android_snoozes_dev)
+                    REMOVAL_DIAGNOSTICS -> stringResource(R.string.pending_removal_diagnostics_dev)
                     else -> filters.firstOrNull { it.id == selectedFilterId }?.title.orEmpty()
                 }
                 OutlinedTextField(value = selectedName, onValueChange = {}, readOnly = true, label = { Text(stringResource(R.string.pending_filter_by_filter)) }, trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(filterMenu) }, modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth())
@@ -98,6 +101,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     relevantFilters.forEach { f -> DropdownMenuItem({ Text(f.title) }, { selectedFilterId = f.id; filterMenu = false }) }
                     HorizontalDivider()
                     DropdownMenuItem({ Text(stringResource(R.string.pending_android_snoozes_dev)) }, { selectedFilterId = ANDROID_SNOOZES; filterMenu = false })
+                    DropdownMenuItem({ Text(stringResource(R.string.pending_removal_diagnostics_dev)) }, { selectedFilterId = REMOVAL_DIAGNOSTICS; filterMenu = false })
                 }
             }
             if (selectedFilterId == ANDROID_SNOOZES) {
@@ -106,6 +110,28 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     items(androidSnoozes, { it.first }) { (key, n) ->
                         val tracked = pending.containsKey(key)
                         Tile(n.title, n.content, n.origin.getFirst(30), if (tracked) stringResource(R.string.pending_android_tracked) else stringResource(R.string.pending_android_untracked), key, {}, null, {}, true)
+                    }
+                }
+            } else if (selectedFilterId == REMOVAL_DIAGNOSTICS) {
+                Column(Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)).fillMaxSize()) {
+                    Text(stringResource(R.string.pending_removal_diagnostics_help), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_small)))
+                    TextButton(onClick = { NotificationListener.clearRemovalDiagnostics() }) { Text(stringResource(R.string.pending_removal_diagnostics_clear)) }
+                    if (removalDiagnostics.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(stringResource(R.string.pending_no_removal_diagnostics), textAlign = TextAlign.Center) }
+                    else LazyColumn(Modifier.fillMaxSize()) {
+                        items(removalDiagnostics, { "${it.timestamp}:${it.key}:${it.reason}" }) { event ->
+                            val time = DateFormat.getTimeInstance(DateFormat.MEDIUM).format(Date(event.timestamp))
+                            Tile(
+                                event.title.ifBlank { event.packageName },
+                                "${event.reasonName} (${event.reason})",
+                                time,
+                                event.packageName.getFirst(30),
+                                event.key,
+                                {},
+                                null,
+                                {},
+                                true,
+                            )
+                        }
                     }
                 }
             } else if (shown.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(stringResource(R.string.no_pending_notifications), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyLarge) }
