@@ -7,6 +7,10 @@
     <string name="pending_all_filters">All rules</string>
     <string name="pending_android_snoozes_dev">All Android snoozes (developer feature)</string>
     <string name="pending_no_android_snoozes">Android currently reports no snoozed notifications</string>
+    <string name="pending_removal_diagnostics_dev">NotificationListener events (developer feature)</string>
+    <string name="pending_removal_diagnostics_help">Events received from Android for notifications currently tracked by NotiFlow. For the test, look for an APP_CANCEL event after reading or deleting snoozed content.</string>
+    <string name="pending_no_removal_diagnostics">No removal event has been received for a tracked pending notification</string>
+    <string name="pending_removal_diagnostics_clear">Clear events</string>
     <string name="pending_android_tracked">Tracked by NotiFlow</string>
     <string name="pending_android_untracked">Not tracked by NotiFlow</string>
     <string name="pending_release_planned">Planned release: %1$s</string>
