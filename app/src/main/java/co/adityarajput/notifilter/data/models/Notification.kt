@@ -117,6 +117,34 @@ data class Notification(
         shortcut = sbn.notification.shortcutId ?: ""
     }
 
+    fun restoreMatchingData(
+        subText: String = "",
+        bigText: String = "",
+        summaryText: String = "",
+        textLines: String = "",
+        conversationTitle: String = "",
+        channel: String = "",
+        channelName: String = "",
+        contextualData: String = "",
+        tag: String = "",
+        group: String = "",
+        category: String = "",
+        shortcut: String = "",
+    ): Notification = apply {
+        this.subText = subText
+        this.bigText = bigText
+        this.summaryText = summaryText
+        this.textLines = textLines
+        this.conversationTitle = conversationTitle
+        this.channel = channel
+        this.channelName = channelName
+        this.contextualData = contextualData
+        this.tag = tag
+        this.group = group
+        this.category = category
+        this.shortcut = shortcut
+    }
+
     fun valueOf(field: NotificationField): String = when (field) {
         NotificationField.TITLE -> title
         NotificationField.CONTENT -> content
