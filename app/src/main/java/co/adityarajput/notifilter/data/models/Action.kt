@@ -46,6 +46,9 @@ sealed class Action {
     @Serializable
     data class REPLACE(val titleTemplate: String, val contentTemplate: String) : Action()
 
+    @Serializable
+    data class READ(val speechTemplate: String) : Action()
+
     @Composable
     fun verb(isGlance: Boolean = false, context: Context? = null): String {
         @Composable
@@ -93,6 +96,7 @@ sealed class Action {
             )
 
             is REPLACE -> getString(R.string.replace_short, titleTemplate, contentTemplate)
+            is READ -> getString(R.string.read_short, speechTemplate)
         }
     }
 
@@ -110,6 +114,7 @@ sealed class Action {
             is DISTURB -> R.string.disturb_long
             is DISMISS_STALE -> R.string.dismiss_stale_long
             is REPLACE -> R.string.replace_long
+            is READ -> R.string.read_long
         },
     )
 
@@ -120,7 +125,7 @@ sealed class Action {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
                 DELAY(), DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
-                REPLACE($$"${app} - ${title}", $$"${content}"),
+                REPLACE($"${app} - ${title}", $"${content}"), READ($"${title}: ${content}"),
             )
         }
 
@@ -162,6 +167,10 @@ sealed class Action {
 
                 REPLACE_REGEX.matchEntire(value)?.groupValues?.let {
                     return REPLACE(it[1], it[2])
+                }
+
+                READ_REGEX.matchEntire(value)?.groupValues?.let {
+                    return READ(it[1])
                 }
 
                 Logger.e("Action.fromString", value)
