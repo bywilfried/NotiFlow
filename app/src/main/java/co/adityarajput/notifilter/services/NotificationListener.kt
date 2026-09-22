@@ -20,6 +20,8 @@ import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import java.time.ZoneId
@@ -36,6 +38,10 @@ class NotificationListener : NotificationListenerService() {
             get() = _instance ?: throw IllegalStateException("NotificationListener not initialized")
             private set(value) { _instance = value }
         val isServiceInitialized get() = _instance != null
+        data class RemovalDiagnostic(val timestamp: Long, val key: String, val packageName: String, val title: String, val reason: Int, val reasonName: String)
+        private val _removalDiagnostics = MutableStateFlow<List<RemovalDiagnostic>>(emptyList())
+        val removalDiagnostics = _removalDiagnostics.asStateFlow()
+        fun clearRemovalDiagnostics() { _removalDiagnostics.value = emptyList() }
         const val NOTIFICATION_SOUND_DURATION = 3000L
         fun createAlertNotificationChannel() { if (instance.notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) instance.notificationManager.createNotificationChannel(NotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID, "NotiFilter Alert Service", NotificationManager.IMPORTANCE_HIGH).apply { description = "Required for ALERT Actions" }) }
         fun createReplaceNotificationChannel(filterId: Int, openSettings: Boolean = false) { val channelId = Constants.getReplaceNotificationChannelId(filterId); if (instance.notificationManager.getNotificationChannel(channelId) == null) instance.notificationManager.createNotificationChannel(NotificationChannel(channelId, "NotiFilter Replace Notifications for Filter #$filterId", NotificationManager.IMPORTANCE_HIGH).apply { description = "Required for REPLACE Actions" }); if (openSettings) instance.startActivity(Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, instance.packageName).putExtra(Settings.EXTRA_CHANNEL_ID, channelId).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
@@ -69,9 +75,12 @@ class NotificationListener : NotificationListenerService() {
         val key = sbn?.key ?: return
         val pending = PendingNotificationRegistry.entries.value[key]
         if (pending != null) {
+            val title = sbn.notification.extras.getCharSequence(android.app.Notification.EXTRA_TITLE)?.toString().orEmpty()
+            val reasonName = removalReasonName(reason)
+            _removalDiagnostics.value = (listOf(RemovalDiagnostic(System.currentTimeMillis(), key, sbn.packageName, title, reason, reasonName)) + _removalDiagnostics.value).take(100)
             Logger.i(
                 "PendingRemovalDiagnostic",
-                "pending notification removed: key=$key package=${sbn.packageName} title=${sbn.notification.extras.getCharSequence(android.app.Notification.EXTRA_TITLE)} reason=$reason (${removalReasonName(reason)})"
+                "pending notification removed: key=$key package=${sbn.packageName} title=$title reason=$reason ($reasonName)"
             )
         }
     }
