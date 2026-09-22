@@ -107,7 +107,9 @@ object PendingNotificationRegistry {
 
     fun all(): List<PendingNotification> = entries.value.values.toList()
     fun forFilter(filterId: Int): List<PendingNotification> = entries.value.values.filter { it.filterId == filterId }
-    fun countForFilter(filterId: Int): Int = entries.value.values.count { it.filterId == filterId }
+    fun countForFilter(filterId: Int): Int = countForFilter(filterId, entries.value)
+    fun countForFilter(filterId: Int, snapshot: Map<String, PendingNotification>): Int =
+        snapshot.values.count { it.filterId == filterId }
 
     private fun persist(context: Context) {
         val array = JSONArray()
