@@ -238,4 +238,9 @@
     <string name="help_privacy_title">Privacy</string>
     <string name="help_privacy_body">Filtering is performed locally on the device. Because notification access can expose sensitive notification text, only grant it to apps you trust. NotiFlow’s filter configuration, pending records and history are stored locally by the app.</string>
     <!-- endregion -->
+    <string name="pending_snapshot_diagnostics_dev">Snoozed snapshot comparison (dev)</string>
+    <string name="pending_snapshot_diagnostics_help">Capture a baseline while the notifications are snoozed, then read or delete their source content. This view checks every 2 seconds and shows only public StatusBarNotification fields that changed. No PendingIntent is executed.</string>
+    <string name="pending_snapshot_capture">Capture baseline now</string>
+    <string name="pending_snapshot_no_changes">No difference detected since the last baseline.</string>
+    <string name="pending_snapshot_changed_fields">%1$d changed field(s)</string>
 </resources>
