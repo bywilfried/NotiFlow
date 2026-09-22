@@ -65,7 +65,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
         while (true) {
             val now = System.currentTimeMillis()
             val expired = pending.values.mapNotNull { item ->
-                val release = predictPendingRelease(item.notification, item.committedUntil, filters)
+                val release = predictPendingRelease(item.notification, item.committedUntil, filters, item.filterId)
                 item.key.takeIf { release != null && release <= now }
             }
             if (expired.isNotEmpty()) {
@@ -112,7 +112,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
             else LazyColumn(Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)).fillMaxSize()) {
                 items(shown, { it.key }) { item ->
                     val n = item.notification
-                    val release = predictPendingRelease(n, item.committedUntil, filters)
+                    val release = predictPendingRelease(n, item.committedUntil, filters, item.filterId)
                     val releaseText = if (release == null) stringResource(R.string.pending_release_never) else DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(release))
                     val androidStatus = if (item.androidPresent) {
                         stringResource(R.string.pending_android_status_present)
