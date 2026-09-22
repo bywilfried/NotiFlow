@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.TextAlign
 import co.adityarajput.notifilter.R
@@ -41,23 +40,6 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     var toOpen by remember { mutableStateOf<PendingNotification?>(null) }
     val relevantFilters = filters.filter { f -> pending.values.any { it.filterId == f.id } }
     val shown = pending.values.filter { selectedFilterId == null || it.filterId == selectedFilterId }.sortedBy { it.committedUntil }
-
-    // Keep the active/removed status synchronized with Android while this screen is open.
-    LaunchedEffect(Unit) {
-        while (true) {
-            if (NotificationListener.isServiceInitialized) {
-                runCatching {
-                    PendingNotificationRegistry.reconcile(
-                        context.applicationContext,
-                        NotificationListener.instance.snoozedNotifications,
-                    )
-                }.onFailure {
-                    Logger.e("PendingNotificationsScreen", "Failed to refresh Android snooze status", it)
-                }
-            }
-            delay(2.seconds)
-        }
-    }
 
     // Keep a lost Android snooze visible until the theoretical release time.
     // At that point it no longer belongs in the pending list.
@@ -114,12 +96,6 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     val n = item.notification
                     val release = predictPendingRelease(n, item.committedUntil, filters, item.filterId)
                     val releaseText = if (release == null) stringResource(R.string.pending_release_never) else DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(release))
-                    val androidStatus = if (item.androidPresent) {
-                        stringResource(R.string.pending_android_status_present)
-                    } else {
-                        stringResource(R.string.pending_android_status_missing)
-                    }
-                    val androidStatusColor = if (item.androidPresent) Color(0xFF2E7D32) else Color(0xFFF57C00)
                     Tile(
                         n.title,
                         n.content,
@@ -130,8 +106,6 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                         null,
                         {},
                         true,
-                        prominentStatus = androidStatus,
-                        prominentStatusColor = androidStatusColor,
                     )
                 }
             }
