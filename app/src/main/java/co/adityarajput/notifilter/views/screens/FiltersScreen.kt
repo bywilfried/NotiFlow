@@ -44,7 +44,20 @@ fun FiltersScreen(
     var showMissingPermissionsDialog by remember { mutableStateOf(context.getSharedPreferences(SETTINGS, MODE_PRIVATE).getBoolean(SHOW_MISSING_PERMISSIONS_DIALOG, true)) }
     var isAdjustingPriorities by remember { mutableStateOf(false) }
     var isListenerServiceInitialized by remember { mutableStateOf(NotificationListener.isServiceInitialized) }
-    LaunchedEffect(Unit) { while (!isListenerServiceInitialized) { isListenerServiceInitialized = NotificationListener.isServiceInitialized; delay(1.seconds) } }
+    LaunchedEffect(Unit) {
+        while (!isListenerServiceInitialized) {
+            isListenerServiceInitialized = NotificationListener.isServiceInitialized
+            delay(1.seconds)
+        }
+        runCatching {
+            PendingNotificationRegistry.reconcile(
+                context.applicationContext,
+                NotificationListener.instance.snoozedNotifications,
+            )
+        }.onFailure {
+            Logger.e("FiltersScreen", "Failed to refresh pending notifications", it)
+        }
+    }
 
     Scaffold(
         topBar = { AppBar(stringResource(R.string.app_name), false) {
@@ -60,7 +73,7 @@ fun FiltersScreen(
             state.value.filters!!.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) { Text(stringResource(R.string.no_filters), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyLarge) }
             else -> LazyColumn(Modifier.padding(paddingValues).padding(dimensionResource(R.dimen.padding_small)).fillMaxSize()) {
                 items(state.value.filters!!, { it.id }) { filter ->
-                    val pendingCount = pending.values.count { it.filterId == filter.id }
+                    val pendingCount = PendingNotificationRegistry.countForFilter(filter.id)
                     Tile(
                         filter.title, filter.action.verb(), if (filter.app == Any) stringResource(R.string.any_app) else filter.app.name.getFirst(30),
                         if (!filter.enabled) stringResource(R.string.filter_disabled) else if (!filter.historyEnabled) stringResource(R.string.history_disabled) else pluralStringResource(R.plurals.hit, filter.hits, filter.hits),
