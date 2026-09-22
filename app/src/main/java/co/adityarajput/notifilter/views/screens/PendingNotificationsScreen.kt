@@ -27,6 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private const val ANDROID_SNOOZES = -1
 private const val REMOVAL_DIAGNOSTICS = -2
+private const val SNOOZED_SNAPSHOT_DIAGNOSTICS = -3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +37,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
     val filters by repository.filters().collectAsState(initial = emptyList())
     val pending by PendingNotificationRegistry.entries.collectAsState()
     val removalDiagnostics by NotificationListener.removalDiagnostics.collectAsState()
+    val snoozedSnapshotDiagnostics by NotificationListener.snoozedSnapshotDiagnostics.collectAsState()
     var selectedFilterId by remember(filterId) { mutableStateOf(filterId) }
     var androidSnoozes by remember { mutableStateOf<List<Pair<String, Notification>>>(emptyList()) }
     var filterMenu by remember { mutableStateOf(false) }
@@ -93,6 +95,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     null -> stringResource(R.string.pending_all_filters)
                     ANDROID_SNOOZES -> stringResource(R.string.pending_android_snoozes_dev)
                     REMOVAL_DIAGNOSTICS -> stringResource(R.string.pending_removal_diagnostics_dev)
+                    SNOOZED_SNAPSHOT_DIAGNOSTICS -> stringResource(R.string.pending_snapshot_diagnostics_dev)
                     else -> filters.firstOrNull { it.id == selectedFilterId }?.title.orEmpty()
                 }
                 OutlinedTextField(value = selectedName, onValueChange = {}, readOnly = true, label = { Text(stringResource(R.string.pending_filter_by_filter)) }, trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(filterMenu) }, modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth())
@@ -102,6 +105,7 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     HorizontalDivider()
                     DropdownMenuItem({ Text(stringResource(R.string.pending_android_snoozes_dev)) }, { selectedFilterId = ANDROID_SNOOZES; filterMenu = false })
                     DropdownMenuItem({ Text(stringResource(R.string.pending_removal_diagnostics_dev)) }, { selectedFilterId = REMOVAL_DIAGNOSTICS; filterMenu = false })
+                    DropdownMenuItem({ Text(stringResource(R.string.pending_snapshot_diagnostics_dev)) }, { selectedFilterId = SNOOZED_SNAPSHOT_DIAGNOSTICS; filterMenu = false })
                 }
             }
             if (selectedFilterId == ANDROID_SNOOZES) {
@@ -110,6 +114,32 @@ fun PendingNotificationsScreen(filterId: Int?, goBack: () -> Unit) {
                     items(androidSnoozes, { it.first }) { (key, n) ->
                         val tracked = pending.containsKey(key)
                         Tile(n.title, n.content, n.origin.getFirst(30), if (tracked) stringResource(R.string.pending_android_tracked) else stringResource(R.string.pending_android_untracked), key, {}, null, {}, true)
+                    }
+                }
+            } else if (selectedFilterId == SNOOZED_SNAPSHOT_DIAGNOSTICS) {
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        NotificationListener.refreshSnoozedSnapshotDiagnostics()
+                        delay(2.seconds)
+                    }
+                }
+                Column(Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)).fillMaxSize()) {
+                    Text(stringResource(R.string.pending_snapshot_diagnostics_help), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_small)))
+                    Button(onClick = { NotificationListener.captureSnoozedSnapshotBaseline() }) {
+                        Text(stringResource(R.string.pending_snapshot_capture))
+                    }
+                    if (snoozedSnapshotDiagnostics.isEmpty()) {
+                        Box(Modifier.fillMaxSize(), Alignment.Center) { Text(stringResource(R.string.pending_snapshot_no_changes), textAlign = TextAlign.Center) }
+                    } else LazyColumn(Modifier.fillMaxSize()) {
+                        items(snoozedSnapshotDiagnostics, { it.key }) { event ->
+                            Tile(
+                                event.title.ifBlank { event.packageName },
+                                event.changedFields.joinToString("\n"),
+                                event.packageName.getFirst(30),
+                                stringResource(R.string.pending_snapshot_changed_fields, event.changedFields.size),
+                                event.key, {}, null, {}, true,
+                            )
+                        }
                     }
                 }
             } else if (selectedFilterId == REMOVAL_DIAGNOSTICS) {
