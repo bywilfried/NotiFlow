@@ -338,7 +338,7 @@ fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         }
         AnimatedVisibility(it is Action.READ && viewModel.state.values.action is Action.READ) {
             val action = (viewModel.state.values.action as? Action.READ)
-                ?: Action.READ($"${title}: ${content}")
+                ?: Action.READ("\${title}: \${content}")
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
