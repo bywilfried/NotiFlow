@@ -4,14 +4,12 @@ import android.app.TimePickerDialog
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,7 +18,6 @@ import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.viewmodels.*
 import co.adityarajput.notifilter.views.components.ErrorText
 import java.text.DateFormatSymbols
-import java.util.Calendar
 import java.util.Locale
 
 private const val DAY = 1440
@@ -124,9 +121,9 @@ fun SchedulePage(viewModel: UpsertFilterViewModel) {
         }
     }
     slots.forEachIndexed { index, slot ->
-        val touching = slots.any { other -> other != slot &&
+        val touching = slots.withIndex().any { (otherIndex, other) -> otherIndex != index &&
             (slot.end % WEEK == other.start || other.end % WEEK == slot.start) }
-        val overlapping = slots.any { other -> other != slot &&
+        val overlapping = slots.withIndex().any { (otherIndex, other) -> otherIndex != index &&
             listOf(-WEEK, 0, WEEK).any { shift ->
                 slot.start < other.end + shift && other.start + shift < slot.end
             } }
