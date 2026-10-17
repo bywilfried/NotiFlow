@@ -196,7 +196,7 @@ abstract class NotiFilterDatabase : RoomDatabase() {
                     }
                 }
                 converted.forEach { (id, json) ->
-                    db.execSQL("UPDATE filters SET schedule = ? WHERE id = ?", arrayOf(json, id))
+                    db.execSQL("UPDATE filters SET schedule = ? WHERE id = ?", arrayOf<Any>(json, id))
                 }
             }
         }
