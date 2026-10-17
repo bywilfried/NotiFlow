@@ -10,7 +10,7 @@ import co.adityarajput.notifilter.data.models.Notification
 
 @Database(
     entities = [Filter::class, Notification::class],
-    version = 14,
+    version = 15,
     autoMigrations = [
         AutoMigration(1, 2), AutoMigration(2, 3), AutoMigration(3, 4),
         AutoMigration(4, 5), AutoMigration(5, 6),
@@ -181,10 +181,30 @@ abstract class NotiFilterDatabase : RoomDatabase() {
             }
         }
 
+        /** Convert every existing schedule in place, without dropping filters or notifications. */
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                val converter = Converters()
+                val converted = mutableListOf<Pair<Int, String>>()
+                db.query("SELECT id, schedule FROM filters").use { cursor ->
+                    val idIndex = cursor.getColumnIndexOrThrow("id")
+                    val scheduleIndex = cursor.getColumnIndexOrThrow("schedule")
+                    while (cursor.moveToNext()) {
+                        val old = cursor.getString(scheduleIndex)
+                        val updated = converter.fromSchedule(converter.toSchedule(old).modernized())
+                        converted.add(cursor.getInt(idIndex) to updated)
+                    }
+                }
+                converted.forEach { (id, json) ->
+                    db.execSQL("UPDATE filters SET schedule = ? WHERE id = ?", arrayOf(json, id))
+                }
+            }
+        }
+
         fun getDatabase(context: Context): NotiFilterDatabase {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(context, NotiFilterDatabase::class.java, "notifilter_database")
-                    .addMigrations(MIGRATION_9_10, MIGRATION_12_13, MIGRATION_13_14)
+                    .addMigrations(MIGRATION_9_10, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
                     .build().also { instance = it }
             }
         }
