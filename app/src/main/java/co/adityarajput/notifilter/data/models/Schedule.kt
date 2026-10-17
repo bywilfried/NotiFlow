@@ -41,14 +41,14 @@ data class Schedule(
         pieces.forEach { part ->
             val last = merged.lastOrNull()
             if (last != null && part.start <= last.end)
-                merged[merged.lastIndex] = WeeklySlot(last.start, maxOf(last.end, part.end))
+                merged[merged.lastIndex] = WeeklySlot(last.start, minOf(last.start + WeeklySlot.WEEK - 1, maxOf(last.end, part.end)))
             else merged.add(part)
         }
         // The Sunday -> Monday boundary is continuous as well.
         if (merged.size > 1 && merged.first().start == 0 && merged.last().end == WeeklySlot.WEEK) {
             val first = merged.removeAt(0)
             val last = merged.removeAt(merged.lastIndex)
-            merged.add(WeeklySlot(last.start, first.end + WeeklySlot.WEEK))
+            merged.add(WeeklySlot(last.start, minOf(last.start + WeeklySlot.WEEK - 1, first.end + WeeklySlot.WEEK)))
         }
         return merged.sortedBy { it.start }
     }
