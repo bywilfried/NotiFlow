@@ -1,4 +1,6 @@
 <h1 align="center">NotiFlow</h1>
+
+[☕ Support development](https://buymeacoffee.com/bywilfried)
 <p align="center">
   <img src="app/src/main/res/drawable-nodpi/notiflow_icon_main.png" alt="NotiFlow app icon" width="160" />
 </p>
